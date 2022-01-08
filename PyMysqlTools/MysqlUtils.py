@@ -60,7 +60,7 @@ class MysqlUtils:
 
     @staticmethod
     def __version__() -> any:
-        return "MysqlUtils ver 0.1"
+        return "PyMysqlTools ver 0.1"
 
     def show_table_desc(self, tb_name):
         return ResultSet(self._sql_actuator.actuator_dql("desc " + tb_name, None))
