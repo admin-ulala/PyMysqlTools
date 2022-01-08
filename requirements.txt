@@ -1,0 +1,2 @@
+setuptools~=58.3.0
+PyMySQL~=1.0.2
