@@ -27,7 +27,6 @@ from SqlGenerator import SqlGenerator
 from SqlActuator import SqlActuator
 from ResultSet import ResultSet
 
-__version__ = "0.1"
 
 
 class MysqlUtils:
