@@ -35,7 +35,7 @@ setup(
         'SqlGenerator',
         'SqlActuator',
     ],
-    install_requires=read_requirements('MysqlUtils/requirements.txt'),  # 指定需要安装的依赖
+    install_requires=read_requirements('requirements.txt'),  # 指定需要安装的依赖
     include_package_data=True,
     license="MIT",
     keywords=['mysql', 'client', 'mysqluitls', 'MysqlUtils'],
