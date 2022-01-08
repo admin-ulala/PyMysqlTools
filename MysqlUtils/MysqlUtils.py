@@ -28,7 +28,6 @@ from SqlActuator import SqlActuator
 from ResultSet import ResultSet
 
 
-
 class MysqlUtils:
 
     def __init__(

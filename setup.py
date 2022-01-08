@@ -23,7 +23,7 @@ setup(
     python_requires='>=3.8.10',  # python环境
     version=MysqlUtils.__version__,  # 包的版本
     description="A library that makes MySQL operation more convenient.",  # 包简介，显示在PyPI上
-    long_description=read_file('MysqlUtils/README.md'),  # 读取的Readme文档内容
+    long_description=read_file('README.md'),  # 读取的Readme文档内容
     long_description_content_type="text/markdown",  # 指定包文档格式为markdown
     author="ulala",  # 作者相关信息
     author_email='2713389652@qq.com',
