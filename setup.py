@@ -27,7 +27,7 @@ setup(
     long_description_content_type="text/markdown",  # 指定包文档格式为markdown
     author="ulala",  # 作者相关信息
     author_email='2713389652@qq.com',
-    url='https://github.com/xxx',
+    url='https://gitee.com/uraurara/MysqlUtils',
     # 指定包信息，还可以用find_packages()函数
     packages=[
         'MysqlUtils',
