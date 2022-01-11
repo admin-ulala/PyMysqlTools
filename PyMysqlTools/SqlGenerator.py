@@ -118,8 +118,6 @@ class SqlGenerator:
         :return: sql语句
         """
         self.sql = f"DESC `{tb_name}`"
-
-        # [返回构建的语句]========================================================
         return self.sql.strip()
 
     def insert_one(self, tb_name: str, data: dict) -> str:
@@ -129,12 +127,10 @@ class SqlGenerator:
         :param data: 要插入的数据<br/>格式: {field: value, ...}
         :return: sql语句
         """
-        # [构建基本语句]==========================================================
+
         self.sql = """
         insert into `{}` ({}) values ({})
         """.format(tb_name, self.get_fields_args(data), self.get_format_args(data))
-
-        # [返回构建的语句]========================================================
         return self.sql.strip()
 
     def delete_by_id(self, tb_name: str) -> str:
@@ -143,21 +139,16 @@ class SqlGenerator:
         :param tb_name: 表名
         :return: sql语句
         """
-        # [构建基本语句]==========================================================
+
         self.sql = """
         delete from `{}` where id = %s
         """.format(tb_name)
-
-        # [返回构建的语句]========================================================
         return self.sql.strip()
 
     def delete(self, tb_name: str, condition: str) -> str:
-        # [构建基本语句]==========================================================
         self.sql = """
         delete from `{}` where {}
         """.format(tb_name, condition)
-
-        # [返回构建的语句]========================================================
         return self.sql.strip()
 
     def update_by_id(self, tb_name: str, data: dict) -> str:
@@ -167,15 +158,11 @@ class SqlGenerator:
         :param data: 要更新的数据<br/>格式: {field: value, ...}
         :return: sql语句
         """
-        # [构建必要子句]==========================================================
         set_clause = self.build_set_clause(data)
 
-        # [构建基本语句]==========================================================
         self.sql = """
         update `{}` set {} where id = %s
         """.format(tb_name, set_clause)
-
-        # [返回构建的语句]========================================================
         return self.sql.strip()
 
     def select_all(self, tb_name: str) -> str:
@@ -184,12 +171,10 @@ class SqlGenerator:
         :param tb_name: 表名
         :return: sql语句
         """
-        # [构建基本语句]==========================================================
+
         self.sql = """
         select * from `{}`
         """.format(tb_name)
-
-        # [返回构建的语句]========================================================
         return self.sql.strip()
 
     def select_by(self, tb_name: str, condition: str) -> str:
@@ -199,16 +184,13 @@ class SqlGenerator:
         :param condition: 查询条件
         :return: sql语句
         """
-        # [构建基本语句]==========================================================
+
         self.sql = """
         select * from `{}` where {}
         """.format(tb_name, condition)
-
-        # [返回构建的语句]========================================================
         return self.sql.strip()
 
     def create_table_with_id(self, tb_name, structure, id_: bool = True) -> str:
-        # [构建必要结构]==========================================================
         fields = structure
         if isinstance(structure, dict):
             fields = list(structure.keys())
@@ -216,31 +198,22 @@ class SqlGenerator:
             fields.insert(0, 'id')
         schema = self.get_schema_args(fields)
 
-        # [构建基本语句]==========================================================
         self.sql = """
         create table `{}`(
         {}
         )
         """.format(tb_name, schema)
-
-        # [返回构建的语句]========================================================
         return self.sql.strip()
 
     def create_table_if_not_exists(self, tb_name, structure, id_: bool = True) -> str:
-        # [构建基本语句]==========================================================
         self.sql = self.create_table_with_id(tb_name, structure, id_)
         temp = re.split('\\s+', self.sql)
         temp.insert(2, 'IF NOT EXISTS')
         self.sql = ' '.join(temp)
-
-        # [返回构建的语句]========================================================
         return self.sql.strip()
 
     def create_table(self, tb_name: str, schema: dict) -> str:
-        # [构建基本语句]==========================================================
         self.sql = """
         CREATE TABLE `{}` (\n{}\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
         """.format(tb_name, self.build_schema(schema))
-
-        # [返回构建的语句]========================================================
         return self.sql.strip()

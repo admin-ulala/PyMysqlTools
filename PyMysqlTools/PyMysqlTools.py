@@ -29,7 +29,7 @@ from PyMysqlTools.SqlActuator import SqlActuator
 from PyMysqlTools.SqlGenerator import SqlGenerator
 
 
-class MysqlUtils:
+class PyMysqlTools:
 
     def __init__(
             self,
@@ -59,7 +59,7 @@ class MysqlUtils:
         self._sql_generator = SqlGenerator()
         self._sql_actuator = SqlActuator(self._connect)
 
-    def show_table_desc(self, tb_name):
+    def show_table_desc(self, tb_name: str):
         """
         查看表结构
         :param tb_name: 表名
