@@ -111,6 +111,17 @@ class SqlGenerator:
             args.append(f"""{key} = %s""")
         return f"""{", ".join(args)}"""
 
+    def desc_table(self, tb_name: str) -> str:
+        """
+        构建[查询表结构]sql语句
+        :param tb_name: 表名
+        :return: sql语句
+        """
+        self.sql = f"DESC `{tb_name}`"
+
+        # [返回构建的语句]========================================================
+        return self.sql.strip()
+
     def insert_one(self, tb_name: str, data: dict) -> str:
         """
         构建[单行插入]sql语句

@@ -7,7 +7,7 @@ class SqlActuator:
         self._connect = connect
         self._cursor = self._connect.cursor()
 
-    def actuator_dml(self, sql: str, args, type_: int = 1) -> int:
+    def actuator_dml(self, sql: str, args=None, type_: int = 1) -> int:
         """
         执行DML语句
         :param sql: 待执行的sql语句
@@ -22,7 +22,7 @@ class SqlActuator:
         self._connect.commit()
         return rows
 
-    def actuator_dql(self, sql: str, args) -> tuple:
+    def actuator_dql(self, sql: str, args=None) -> tuple:
         """
         执行DQL语句
         :param sql: 待执行的sql语句
