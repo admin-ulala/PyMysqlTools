@@ -29,9 +29,9 @@ import warnings
 
 import pymysql
 
-from PyMysqlTools.ResultSet import ResultSet
-from PyMysqlTools.SqlActuator import SqlActuator
-from PyMysqlTools.SqlGenerator import SqlGenerator
+from ResultSet import ResultSet
+from SqlActuator import SqlActuator
+from SqlGenerator import SqlGenerator
 
 
 class PyMysqlTools:

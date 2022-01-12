@@ -19,20 +19,19 @@ def read_requirements(filename):
 
 
 setup(
-    name='PyMysqlTools',  # 包名
-    python_requires='>=3.8.10',  # python环境
-    version=PyMysqlTools.__version__,  # 包的版本
-    description="A library that makes MySQL operation more convenient.",  # 包简介，显示在PyPI上
-    long_description=read_file('README.md'),  # 读取的Readme文档内容
-    long_description_content_type="text/markdown",  # 指定包文档格式为markdown
-    author="ulala",  # 作者相关信息
+    name='PyMysqlTools',
+    python_requires='>=3.8.10',
+    version=PyMysqlTools.__version__,
+    description="A library that makes MySQL operation more convenient.",
+    long_description=read_file('README.md'),
+    long_description_content_type="text/markdown",
+    author="ulala",
     author_email='2713389652@qq.com',
     url='https://gitee.com/uraurara/PyMysqlTools',
-    # 指定包信息，还可以用find_packages()函数
     packages=[
         'PyMysqlTools',
     ],
-    install_requires=read_requirements('requirements.txt'),  # 指定需要安装的依赖
+    install_requires=read_requirements('requirements.txt'),
     include_package_data=True,
     license="MIT",
     keywords=['mysql', 'client', 'mysqluitls', 'PyMysqlTools'],
