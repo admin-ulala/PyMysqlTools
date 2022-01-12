@@ -1,0 +1,5 @@
+/build
+/dist
+PyMysqlTools.egg-info
+MANIFEST.in
+.idea
