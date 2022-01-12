@@ -15,8 +15,13 @@
 
    ===========================================================================
 
-    ver 1.0
-        - 上传本项目
+    ver 0.1
+        - 上传本项目 2022-01-08
+
+    [2022-01-12]
+        - [P3]: 所有的 create_table 方法都不稳定, 待修复。
+        - [P2]: 所有的 find_* 方法都无法指定字段查询, 待添加。       // 已添加
+        - [P1]: 暂时没有 update 方法, 待添加。                    // 已添加
 
    ===========================================================================
 """
@@ -176,14 +181,52 @@ class PyMysqlTools:
         sql = self._sql_generator.delete(tb_name, condition)
         return self._sql_actuator.actuator_dml(sql)
 
+    def update_by_id(self, tb_name: str, data: dict, id_: int) -> int:
+        """
+        根据id更新记录
+        :param tb_name: 表名
+        :param data: 待更新的数据
+        :param id_: id
+        :return: 影响行数
+        """
+        return self.update(tb_name, data, id_=id_)
+
+    def update_by(self, tb_name: str, data: dict, condition: str) -> int:
+        """
+        根据条件更新记录
+        :param tb_name: 表名
+        :param data: 待更新的数据
+        :param condition: 更新条件
+        :return: 影响行数
+        """
+        return self.update(tb_name, data, condition=condition)
+
+    def update(self, tb_name: str, data: dict, id_: int = None, condition: str = None) -> int:
+        """
+        更新操作
+        :param tb_name: 表名
+        :param data: 待更新的数据
+        :param id_: id
+        :param condition: 更新条件
+        :return: 影响行数
+        """
+        if id_:
+            sql = self._sql_generator.update_by_id(tb_name, data)
+            args = list(data.values()).append(id_)
+            return self._sql_actuator.actuator_dml(sql, args)
+        if condition:
+            sql = self._sql_generator.update_by(tb_name, data, condition)
+            args = list(data.values())
+            return self._sql_actuator.actuator_dml(sql, args)
+
     def find_one(self, tb_name: str) -> ResultSet:
         """
-        查询一条数据
+        查询单条数据
         :param tb_name: 表名
-        :return: 一条数据
+        :return: 单条数据
         """
-        sql = self._sql_generator.select_all(tb_name)
-        return ResultSet(self._sql_actuator.actuator_dql(sql)).limit(1)
+        sql = self._sql_generator.select_one(tb_name)
+        return ResultSet(self._sql_actuator.actuator_dql(sql))
 
     def find_all(self, tb_name: str) -> ResultSet:
         """

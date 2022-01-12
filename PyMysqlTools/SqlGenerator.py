@@ -18,13 +18,18 @@ class SqlGenerator:
         return ','.join(result)
 
     @staticmethod
-    def get_fields_args(data: dict) -> str:
+    def get_fields_args(data: any) -> str:
         """
         构建[字段列表]
         :param data: 字典数据
         :return: 字段列表
         """
-        return ", ".join([f"`{field}`" for field in data.keys()])
+        if isinstance(data, dict):
+            return ", ".join([f"`{field}`" for field in data.keys()])
+        if isinstance(data, list):
+            return ", ".join([f"`{field}`" for field in data])
+        if data is None:
+            return "*"
 
     @staticmethod
     def get_format_args(data: dict) -> str:
@@ -139,7 +144,6 @@ class SqlGenerator:
         :param tb_name: 表名
         :return: sql语句
         """
-
         self.sql = """
         delete from `{}` where id = %s
         """.format(tb_name)
@@ -159,35 +163,62 @@ class SqlGenerator:
         :return: sql语句
         """
         set_clause = self.build_set_clause(data)
-
         self.sql = """
         update `{}` set {} where id = %s
         """.format(tb_name, set_clause)
+
         return self.sql.strip()
 
-    def select_all(self, tb_name: str) -> str:
+    def update_by(self, tb_name: str, data: dict, condition: str) -> str:
+        """
+        构建[根据条件更新]sql语句
+        :param tb_name: 表名
+        :param data: 要更新的数据<br/>格式: {field: value, ...}
+        :param condition: 更新条件
+        :return: sql语句
+        """
+        set_clause = self.build_set_clause(data)
+        self.sql = """
+        update `{}` set {} where {}
+        """.format(tb_name, set_clause, condition)
+
+        return self.sql.strip()
+
+    def select_one(self, tb_name: str, find_name: list = None) -> str:
+        """
+        构建[查询单条数据]sql语句
+        :param tb_name: 表名
+        :param find_name: 希望查询的字段
+        :return: sql语句
+        """
+        self.sql = """
+        select {} from `{}` limit 1
+        """.format(self.get_fields_args(find_name), tb_name)
+        return self.sql.strip()
+
+    def select_all(self, tb_name: str, find_name: list = None) -> str:
         """
         构建[查询全表数据]sql语句
         :param tb_name: 表名
+        :param find_name: 希望查询的字段
         :return: sql语句
         """
-
         self.sql = """
-        select * from `{}`
-        """.format(tb_name)
+        select {} from `{}`
+        """.format(self.get_fields_args(find_name), tb_name)
         return self.sql.strip()
 
-    def select_by(self, tb_name: str, condition: str) -> str:
+    def select_by(self, tb_name: str, condition: str, find_name: list = None) -> str:
         """
         构建[带条件的查询]sql语句
         :param tb_name: 表名
         :param condition: 查询条件
+        :param find_name: 希望查询的字段
         :return: sql语句
         """
-
         self.sql = """
-        select * from `{}` where {}
-        """.format(tb_name, condition)
+        select {} from `{}` where {}
+        """.format(self.get_fields_args(find_name), tb_name, condition)
         return self.sql.strip()
 
     def create_table_with_id(self, tb_name, structure, id_: bool = True) -> str:
