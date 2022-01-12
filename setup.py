@@ -27,13 +27,10 @@ setup(
     long_description_content_type="text/markdown",  # 指定包文档格式为markdown
     author="ulala",  # 作者相关信息
     author_email='2713389652@qq.com',
-    url='https://gitee.com/uraurara/MysqlUtils',
+    url='https://gitee.com/uraurara/PyMysqlTools',
     # 指定包信息，还可以用find_packages()函数
     packages=[
         'PyMysqlTools',
-        'ResultSet',
-        'SqlGenerator',
-        'SqlActuator',
     ],
     install_requires=read_requirements('requirements.txt'),  # 指定需要安装的依赖
     include_package_data=True,
@@ -42,7 +39,7 @@ setup(
     classifiers=[
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
-        'Natural Language :: English',
+        'Natural Language :: Chinese (Simplified)',
         'Programming Language :: Python :: 3.8',
     ],
 )
