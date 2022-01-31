@@ -73,6 +73,14 @@ class PyMysqlTools:
         sql = self._sql_generator.desc_table(tb_name)
         return ResultSet(self._sql_actuator.actuator_dql(sql))
 
+    def show_table_size(self, tb_name: str) -> int:
+        sql = self._sql_generator.show_table_size(tb_name)
+        return ResultSet(self._sql_actuator.actuator_dql(sql)).get(0)
+
+    def show_table_vague_size(self, tb_name: str) -> int:
+        sql = self._sql_generator.show_table_vague_size(tb_name)
+        return ResultSet(self._sql_actuator.actuator_dql(sql)).get(0)
+
     def is_exist_database(self, db_name: str) -> bool:
         """
         判断数据库是否存在
@@ -271,10 +279,4 @@ class PyMysqlTools:
 
 
 if __name__ == '__main__':
-    mysql = PyMysqlTools(
-        database='test',
-        username='root',
-        password='123456'
-    )
-
-    print(mysql.update_insert_by_id('tb_test', {'username': 'root', 'password': '12345678', 'id': '6'}))
+    pass

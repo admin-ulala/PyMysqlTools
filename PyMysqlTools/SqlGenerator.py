@@ -116,6 +116,28 @@ class SqlGenerator:
             args.append(f"""{key} = %s""")
         return f"""{", ".join(args)}"""
 
+    def show_table_size(self, tb_name: str) -> str:
+        """
+        构建[查询表大小]sql语句
+        :param tb_name:
+        :return:
+        """
+        self.sql = f"select count(1) as table_rows from `{tb_name}`"
+        return self.sql.strip()
+
+    def show_table_vague_size(self, tb_name: str) -> str:
+        """
+        构建[模糊查询表大小]sql语句
+        :param tb_name:
+        :return:
+        """
+        self.sql = f"""
+        select tb.TABLE_ROWS 
+        from information_schema.`TABLES` tb
+        where tb.TABLE_NAME = '{tb_name}'
+        """
+        return self.sql.strip()
+
     def desc_table(self, tb_name: str) -> str:
         """
         构建[查询表结构]sql语句
