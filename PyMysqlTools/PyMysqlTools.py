@@ -23,6 +23,10 @@
         - [P2]: 所有的 find_* 方法都无法指定字段查询, 待添加。       // 已添加
         - [P1]: 暂时没有 update 方法, 待添加。                    // 已添加
 
+    [2022-01-31]
+        - [P3]: 添加了 show_table_size 方法
+        - [P3]: 添加了 update_insert_by_id 方法
+
    ===========================================================================
 """
 import warnings
@@ -289,13 +293,4 @@ class PyMysqlTools:
 
 
 if __name__ == '__main__':
-    # pass
-    mysql = PyMysqlTools(
-        database='test',
-        username='root',
-        password='123456'
-    )
-
-    # print(mysql.update_insert_by_id('tb_test', {'username': 'root', 'password': '12345678', 'id': '6'}))
-    print(mysql.show_table_size('tb_test'))
-    print(mysql.show_table_vague_size('tb_test'))
+    pass
