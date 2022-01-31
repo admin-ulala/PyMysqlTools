@@ -64,7 +64,7 @@ class PyMysqlTools:
         self._sql_generator = SqlGenerator()
         self._sql_actuator = SqlActuator(self._connect)
 
-    def show_table_desc(self, tb_name: str):
+    def show_table_desc(self, tb_name: str) -> ResultSet:
         """
         查看表结构
         :param tb_name: 表名
@@ -105,7 +105,7 @@ class PyMysqlTools:
         sql = self._sql_generator.build_show_clause('tables')
         return ResultSet(self._sql_actuator.actuator_dql(sql))
 
-    def create_table(self, tb_name, schema: dict):
+    def create_table(self, tb_name, schema: dict) -> int:
         """
         创建数据表
         :param tb_name: 表名
@@ -258,7 +258,7 @@ class PyMysqlTools:
         sql = self._sql_generator.select_by(tb_name, condition)
         return ResultSet(self._sql_actuator.actuator_dql(sql))
 
-    def close(self):
+    def close(self) -> None:
         """
         关闭连接, 不建议手动调用, 在多线程环境下可能会出现不可预知的问题
         :return: None
