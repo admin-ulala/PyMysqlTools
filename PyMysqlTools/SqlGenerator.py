@@ -138,6 +138,19 @@ class SqlGenerator:
         """.format(tb_name, self.get_fields_args(data), self.get_format_args(data))
         return self.sql.strip()
 
+    def update_insert_by_id(self, tb_name: str, data: dict) -> str:
+        """
+        构建[更新插入]sql语句
+        :param tb_name: 表名
+        :param data: 要插入的数据<br/>格式: {field: value, ...}
+        :return: sql语句
+        """
+
+        self.sql = """
+        replace into `{}` ({}) values ({})
+        """.format(tb_name, self.get_fields_args(data), self.get_format_args(data))
+        return self.sql.strip()
+
     def delete_by_id(self, tb_name: str) -> str:
         """
         构建[根据id删除]sql语句

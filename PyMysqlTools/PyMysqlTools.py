@@ -160,6 +160,17 @@ class PyMysqlTools:
         args = list(zip(list(data.values())[0], list(data.values())[1]))
         return self._sql_actuator.actuator_dml(sql, args, -1)
 
+    def update_insert_by_id(self, tb_name: str, data: dict) -> int:
+        """
+        插入一条数据, 存在就更新, 不存在就插入 (需要唯一索引或主键)
+        :param tb_name: 表名
+        :param data: 待插入的数据
+        :return: 影响行数
+        """
+        sql = self._sql_generator.update_insert_by_id(tb_name, data)
+        args = list(data.values())
+        return self._sql_actuator.actuator_dml(sql, args)
+
     def delete_by_id(self, tb_name: str, id_: int) -> int:
         """
         根据id删除记录
@@ -171,7 +182,7 @@ class PyMysqlTools:
         args = [id_]
         return self._sql_actuator.actuator_dml(sql, args)
 
-    def delete(self, tb_name: str, condition: str) -> int:
+    def delete_by(self, tb_name: str, condition: str) -> int:
         """
         删除记录
         :param tb_name: 表名
@@ -260,4 +271,10 @@ class PyMysqlTools:
 
 
 if __name__ == '__main__':
-    pass
+    mysql = PyMysqlTools(
+        database='test',
+        username='root',
+        password='123456'
+    )
+
+    print(mysql.update_insert_by_id('tb_test', {'username': 'root', 'password': '12345678', 'id': '6'}))
