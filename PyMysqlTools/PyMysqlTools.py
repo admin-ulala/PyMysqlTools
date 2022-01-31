@@ -74,10 +74,20 @@ class PyMysqlTools:
         return ResultSet(self._sql_actuator.actuator_dql(sql))
 
     def show_table_size(self, tb_name: str) -> int:
+        """
+        查询表有多少条记录
+        :param tb_name: 表名
+        :return: 记录数
+        """
         sql = self._sql_generator.show_table_size(tb_name)
         return ResultSet(self._sql_actuator.actuator_dql(sql)).get(0)
 
     def show_table_vague_size(self, tb_name: str) -> int:
+        """
+        估算表有多少条记录, 准确度低, 但速度快
+        :param tb_name:
+        :return: 记录数
+        """
         sql = self._sql_generator.show_table_vague_size(tb_name)
         return ResultSet(self._sql_actuator.actuator_dql(sql)).get(0)
 
@@ -279,4 +289,13 @@ class PyMysqlTools:
 
 
 if __name__ == '__main__':
-    pass
+    # pass
+    mysql = PyMysqlTools(
+        database='test',
+        username='root',
+        password='123456'
+    )
+
+    # print(mysql.update_insert_by_id('tb_test', {'username': 'root', 'password': '12345678', 'id': '6'}))
+    print(mysql.show_table_size('tb_test'))
+    print(mysql.show_table_vague_size('tb_test'))
