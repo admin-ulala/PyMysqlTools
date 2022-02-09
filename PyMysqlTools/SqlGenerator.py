@@ -113,7 +113,7 @@ class SqlGenerator:
         """
         args = []
         for key in data.keys():
-            args.append(f"""{key} = %s""")
+            args.append(f"""`{key}` = %s""")
         return f"""{", ".join(args)}"""
 
     def show_table_size(self, tb_name: str) -> str:
@@ -199,7 +199,7 @@ class SqlGenerator:
         """
         set_clause = self.build_set_clause(data)
         self.sql = """
-        update `{}` set {} where id = %s
+        update `{}` set {} where `id` = %s
         """.format(tb_name, set_clause)
 
         return self.sql.strip()
