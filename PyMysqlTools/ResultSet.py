@@ -5,6 +5,7 @@ class ResultSet:
             result = []
 
         self._result = []
+
         for row in result:
             if isinstance(row, tuple):
                 if len(row) > 1:
@@ -35,7 +36,7 @@ class ResultSet:
 
     def limit(self, num: int = 1):
         if num > 0:
-            return self._result[num - 1]
+            return self._result[: num]
         else:
             raise ArgsError("'num' 参数的值必须大于 0 ！")
 
