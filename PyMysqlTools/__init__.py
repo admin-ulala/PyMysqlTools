@@ -1,4 +1,4 @@
-from PyMysqlTools import *
+from PyMysqlTools import PyMysqlTools
 
-__version__ = "0.3.1"
+__version__ = "0.3.2"
 name = "PyMysqlTools"
