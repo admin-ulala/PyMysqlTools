@@ -33,9 +33,9 @@ import warnings
 
 import pymysql
 
-from ResultSet import ResultSet
-from SqlActuator import SqlActuator
-from SqlGenerator import SqlGenerator
+from PyMysqlTools.ResultSet import ResultSet
+from PyMysqlTools.SqlActuator import SqlActuator
+from PyMysqlTools.SqlGenerator import SqlGenerator
 
 
 class PyMysqlTools:
