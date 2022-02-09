@@ -1,34 +1,3 @@
-"""
-   Copyright [2022] [ulala]
-
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-       https://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-
-   ===========================================================================
-
-    ver 0.1
-        - 上传本项目 2022-01-08
-
-    [2022-01-12]
-        - [P3]: 所有的 create_table 方法都不稳定, 待修复。
-        - [P2]: 所有的 find_* 方法都无法指定字段查询, 待添加。       // 已添加
-        - [P1]: 暂时没有 update 方法, 待添加。                    // 已添加
-
-    [2022-01-31]
-        - [P3]: 添加了 show_table_size 方法
-        - [P3]: 添加了 update_insert_by_id 方法
-
-   ===========================================================================
-"""
 import warnings
 
 import pymysql
