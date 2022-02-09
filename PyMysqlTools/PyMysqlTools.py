@@ -38,7 +38,7 @@ from PyMysqlTools.SqlActuator import SqlActuator
 from PyMysqlTools.SqlGenerator import SqlGenerator
 
 
-class PyMysqlTools:
+class connect:
 
     def __init__(
             self,
