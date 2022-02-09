@@ -245,7 +245,8 @@ class connect:
         """
         if id_:
             sql = self._sql_generator.update_by_id(tb_name, data)
-            args = list(data.values()).append(id_)
+            args = list(data.values())
+            args.append(id_)
             return self._sql_actuator.actuator_dml(sql, args)
         if condition:
             sql = self._sql_generator.update_by(tb_name, data, condition)
