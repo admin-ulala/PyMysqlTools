@@ -15,6 +15,9 @@ class ResultSet:
             else:
                 self._result.append(row)
 
+        if len(result) == 1:
+            self._result = list(result[0])
+
         self._index = 0
 
     def __iter__(self):
@@ -30,6 +33,9 @@ class ResultSet:
 
     def __str__(self):
         return self._result.__str__()
+
+    def __len__(self):
+        return len(self._result)
 
     def all(self):
         return self._result
