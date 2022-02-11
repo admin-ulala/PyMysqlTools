@@ -1,10 +1,9 @@
-import warnings
-
 import pymysql
 
-from PyMysqlTools.ResultSet import ResultSet
-from PyMysqlTools.SqlActuator import SqlActuator
-from PyMysqlTools.SqlGenerator import SqlGenerator
+from ClauseGenerator import ClauseGenerator
+from SqlActuator import SqlActuator
+from SqlGenerator import SqlGenerator
+from ResultSet import ResultSet
 
 
 class connect:
@@ -12,10 +11,10 @@ class connect:
     def __init__(
             self,
             database,
-            host='localhost',
-            port=3306,
             username=None,
             password=None,
+            host='localhost',
+            port=3306,
             charset='utf8mb4'
     ):
         self.host = host
@@ -34,8 +33,144 @@ class connect:
             charset=charset
         )
         self._cursor = self._connect.cursor()
+        self._clause_generator = ClauseGenerator()
         self._sql_generator = SqlGenerator()
         self._sql_actuator = SqlActuator(self._connect)
+
+    def insert_one(self, tb_name, data: dict):
+        """
+        插入单条记录
+        :param tb_name: 表名
+        :param data: 待插入的数据
+        :return: 受影响的行数
+        """
+        sql = self._sql_generator.insert_one(tb_name, data)
+        args = list(data.values())
+        return self._sql_actuator.actuator_dml(sql, args)
+
+    def batch_insert(self, tb_name: str, data):
+        """
+        批量插入记录
+        :param tb_name: 表名
+        :param data: 待插入的数据
+        :return: 受影响的行数
+        """
+        row_num = -1
+        data_list = []
+
+        if isinstance(data, dict):
+            if isinstance(list(data.values())[0], list):
+                # [类型转换, dict{str: list} -> list[dict]]
+                for index in range(len(list(data.values())[0])):
+                    temp = {}
+                    for key in data.keys():
+                        temp[key] = data.get(key)[index]
+                    data_list.append(temp)
+
+        if isinstance(data, list):
+            if isinstance(data[0], dict):
+                data_list = data
+
+        for i in data_list:
+            self.insert_one(tb_name, i)
+            row_num += 1
+
+        if row_num == -1:
+            raise ValueError('[参数类型错误]', "'data' 只能是 dict{str: list}或list[dict] 的类型格式")
+        return row_num + 1
+
+    def delete_by(self, tb_name: str, condition=None):
+        """
+        根据条件删除记录
+        :param tb_name: 表名
+        :param condition: 删除条件
+        :return: 受影响的行数
+        """
+        sql = self._sql_generator.delete_by(tb_name, condition)
+        return self._sql_actuator.actuator_dml(sql)
+
+    def delete_by_id(self, tb_name: str, id_: int):
+        """
+        根据id删除记录
+        :param tb_name: 表名
+        :param id_: id
+        :return: 受影响的行数
+        """
+        return self.delete_by(tb_name, {'id': id_})
+
+    def update_by(self, tb_name: str, data: dict, condition=None):
+        """
+        根据条件更新记录
+        :param tb_name: 表名
+        :param data: 待更新的数据
+        :param condition: 更新条件
+        :return: 受影响的行数
+        """
+        sql = self._sql_generator.update_by(tb_name, data, condition)
+        args = list(data.values())
+        return self._sql_actuator.actuator_dml(sql, args)
+
+    def update_by_id(self, tb_name: str, data: dict, id_: int):
+        """
+        根据id更新记录
+        :param tb_name: 表名
+        :param data: 待更新的数据
+        :param id_: id
+        :return: 受影响的行数
+        """
+        return self.update_by(tb_name, data, {'id': id_})
+
+    def find_by(self, tb_name: str, fields: list = None, condition=None):
+        """
+        根据条件查询记录
+        :param tb_name: 表名
+        :param fields: 需要查询的字段
+        :param condition: 查询条件
+        :return: 结果集
+        """
+        sql = self._sql_generator.find_by(tb_name, fields, condition)
+        return ResultSet(self._sql_actuator.actuator_dql(sql))
+
+    def find_by_id(self, tb_name: str, id_: int, fields: list = None):
+        """
+        根据id查询记录
+        :param tb_name: 表名
+        :param id_: id
+        :param fields: 需要查询的字段
+        :return: 结果集
+        """
+        return ResultSet(self.find_by(tb_name, fields, {'id': id_}))
+
+    def find_one(self, tb_name: str, fields: list = None, condition=None):
+        """
+        根据条件查询单条记录
+        :param tb_name: 表名
+        :param fields: 需要查询的字段
+        :param condition: 查询条件
+        :return: 结果集
+        """
+        sql = self._sql_generator.find_by(tb_name, fields, condition)
+        sql += self._clause_generator.build_limit_clause(1)
+        return ResultSet(self._sql_actuator.actuator_dql(sql))
+
+    def find_all(self, tb_name: str):
+        """
+        查询全表记录
+        :param tb_name: 表名
+        :return: 结果集
+        """
+        return ResultSet(self.find_by(tb_name))
+
+    # ====================================================================================================
+
+    def show_table_fields(self, tb_name: str) -> ResultSet:
+        """
+        查看表字段
+        :param tb_name:表名
+        :return: 结果集
+        """
+        sql = self._sql_generator.show_table_fields(self.database, tb_name)
+        return ResultSet(self._sql_actuator.actuator_dql(sql))
 
     def show_table_desc(self, tb_name: str) -> ResultSet:
         """
@@ -64,6 +199,22 @@ class connect:
         sql = self._sql_generator.show_table_vague_size(tb_name)
         return ResultSet(self._sql_actuator.actuator_dql(sql)).get(0)
 
+    def show_databases(self) -> ResultSet:
+        """
+        查看所有数据库
+        :return: 所有数据库
+        """
+        sql = self._clause_generator.build_show_clause('DATABASES')
+        return ResultSet(self._sql_actuator.actuator_dql(sql))
+
+    def show_tables(self) -> ResultSet:
+        """
+        查看所有数据表
+        :return: 所有数据表
+        """
+        sql = self._clause_generator.build_show_clause('TABLES')
+        return ResultSet(self._sql_actuator.actuator_dql(sql))
+
     def is_exist_database(self, db_name: str) -> bool:
         """
         判断数据库是否存在
@@ -79,188 +230,3 @@ class connect:
         :return: True: 存在<br>False: 不存在
         """
         return tb_name in self.show_tables()
-
-    def show_databases(self) -> ResultSet:
-        """
-        查看所有数据库
-        :return: 所有数据库
-        """
-        sql = self._sql_generator.build_show_clause('databases')
-        return ResultSet(self._sql_actuator.actuator_dql(sql))
-
-    def show_tables(self) -> ResultSet:
-        """
-        查看所有数据表
-        :return: 所有数据表
-        """
-        sql = self._sql_generator.build_show_clause('tables')
-        return ResultSet(self._sql_actuator.actuator_dql(sql))
-
-    def create_table(self, tb_name, schema: dict) -> int:
-        """
-        创建数据表
-        :param tb_name: 表名
-        :param schema: 结构
-        :return: 影响行数
-        """
-        sql = self._sql_generator.create_table(tb_name, schema)
-        return self._sql_actuator.actuator_dml(sql)
-
-    def create_table_with_id(self, tb_name: str, structure, id_: bool = True) -> int:
-        """
-        创建数据表(带id)
-        :param tb_name: 表名
-        :param structure: 结构
-        :param id_: 是否自动补上id字段
-        :return: 影响行数
-        """
-        warnings.warn("this function is deprecated, new function to see @create_table", DeprecationWarning)
-        sql = self._sql_generator.create_table_with_id(tb_name, structure, id_)
-        return self._sql_actuator.actuator_dml(sql)
-
-    def create_table_if_not_exists(self, tb_name: str, structure, id_: bool = True) -> int:
-        """
-        如果表不存在, 再创建表; 否则不创建
-        :param tb_name: 表名
-        :param structure: 结构
-        :param id_: 是否自动补上id字段
-        :return: 影响行数
-        """
-        sql = self._sql_generator.create_table_if_not_exists(tb_name, structure, id_)
-        return self._sql_actuator.actuator_dml(sql)
-
-    def insert_one(self, tb_name: str, data: dict) -> int:
-        """
-        插入一条数据
-        :param tb_name: 表名
-        :param data: 待插入的数据
-        :return: 影响行数
-        """
-        sql = self._sql_generator.insert_one(tb_name, data)
-        args = list(data.values())
-        return self._sql_actuator.actuator_dml(sql, args)
-
-    def batch_insert(self, tb_name: str, data: dict) -> int:
-        """
-        批量插入数据
-        :param tb_name: 表名
-        :param data: 待插入的数据
-        :return: 影响行数
-        """
-        sql = self._sql_generator.insert_one(tb_name, data)
-        args = list(zip(list(data.values())[0], list(data.values())[1]))
-        return self._sql_actuator.actuator_dml(sql, args, -1)
-
-    def update_insert_by_id(self, tb_name: str, data: dict) -> int:
-        """
-        插入一条数据, 存在就更新, 不存在就插入 (需要唯一索引或主键)
-        :param tb_name: 表名
-        :param data: 待插入的数据
-        :return: 影响行数
-        """
-        sql = self._sql_generator.update_insert_by_id(tb_name, data)
-        args = list(data.values())
-        return self._sql_actuator.actuator_dml(sql, args)
-
-    def delete_by_id(self, tb_name: str, id_: int) -> int:
-        """
-        根据id删除记录
-        :param tb_name: 表名
-        :param id_: id值
-        :return: 影响行数
-        """
-        sql = self._sql_generator.delete_by_id(tb_name)
-        args = [id_]
-        return self._sql_actuator.actuator_dml(sql, args)
-
-    def delete_by(self, tb_name: str, condition: str) -> int:
-        """
-        删除记录
-        :param tb_name: 表名
-        :param condition: 删除条件
-        :return: 影响行数
-        """
-        sql = self._sql_generator.delete(tb_name, condition)
-        return self._sql_actuator.actuator_dml(sql)
-
-    def update_by_id(self, tb_name: str, data: dict, id_: int) -> int:
-        """
-        根据id更新记录
-        :param tb_name: 表名
-        :param data: 待更新的数据
-        :param id_: id
-        :return: 影响行数
-        """
-        return self.update(tb_name, data, id_=id_)
-
-    def update_by(self, tb_name: str, data: dict, condition: str) -> int:
-        """
-        根据条件更新记录
-        :param tb_name: 表名
-        :param data: 待更新的数据
-        :param condition: 更新条件
-        :return: 影响行数
-        """
-        return self.update(tb_name, data, condition=condition)
-
-    def update(self, tb_name: str, data: dict, id_: int = None, condition: str = None) -> int:
-        """
-        更新操作
-        :param tb_name: 表名
-        :param data: 待更新的数据
-        :param id_: id
-        :param condition: 更新条件
-        :return: 影响行数
-        """
-        if id_:
-            sql = self._sql_generator.update_by_id(tb_name, data)
-            args = list(data.values())
-            args.append(id_)
-            return self._sql_actuator.actuator_dml(sql, args)
-        if condition:
-            sql = self._sql_generator.update_by(tb_name, data, condition)
-            args = list(data.values())
-            return self._sql_actuator.actuator_dml(sql, args)
-
-    def find_one(self, tb_name: str) -> ResultSet:
-        """
-        查询单条数据
-        :param tb_name: 表名
-        :return: 单条数据
-        """
-        sql = self._sql_generator.select_one(tb_name)
-        return ResultSet(self._sql_actuator.actuator_dql(sql))
-
-    def find_all(self, tb_name: str) -> ResultSet:
-        """
-        查询所有数据
-        :param tb_name: 表名
-        :return: 全表数据
-        """
-        sql = self._sql_generator.select_all(tb_name)
-        return ResultSet(self._sql_actuator.actuator_dql(sql))
-
-    def find_by(self, tb_name: str, condition: str) -> ResultSet:
-        """
-        带条件查询数据
-        :param tb_name: 表名
-        :param condition: 查询条件
-        :return: 查询表数据
-        """
-        sql = self._sql_generator.select_by(tb_name, condition)
-        return ResultSet(self._sql_actuator.actuator_dql(sql))
-
-    def close(self) -> None:
-        """
-        关闭连接, 不建议手动调用, 在多线程环境下可能会出现不可预知的问题
-        :return: None
-        """
-        self._cursor.close()
-        self._connect.close()
-
-    # def __del__(self):
-    #     self.close()
-
-
-if __name__ == '__main__':
-    pass
