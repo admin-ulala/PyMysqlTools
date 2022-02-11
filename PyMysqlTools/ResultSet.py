@@ -38,7 +38,7 @@ class ResultSet:
         if num > 0:
             return self._result[: num]
         else:
-            raise ArgsError("'num' 参数的值必须大于 0 ！")
+            raise ValueError("'num' 参数的值必须大于 0 ！")
 
     def next(self):
         if self._index < len(self._result):
@@ -50,12 +50,3 @@ class ResultSet:
 
     def get(self, index):
         return self._result[index]
-
-
-class ArgsError(Exception):
-    def __init__(self, message):
-        super().__init__(self)
-        self.message = message
-
-    def __str__(self):
-        return self.message
