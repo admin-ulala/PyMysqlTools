@@ -252,11 +252,3 @@ class connect:
         """
         sql = self._sql_generator.create_table(tb_name, schema)
         return self._sql_actuator.actuator_dml(sql)
-
-
-if __name__ == '__main__':
-    mysql = connect(
-        'spider',
-        'root',
-        '123456'
-    )
