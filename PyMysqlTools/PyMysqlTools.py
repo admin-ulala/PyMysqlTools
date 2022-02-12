@@ -71,12 +71,16 @@ class connect:
             if isinstance(data[0], dict):
                 data_list = data
 
+        if isinstance(data, ResultSet):
+            for row in data:
+                data_list.append(dict(zip(self.show_table_fields(tb_name), row)))
+
         for i in data_list:
             self.insert_one(tb_name, i)
             row_num += 1
 
         if row_num == -1:
-            raise ValueError('[参数类型错误]', "'data' 只能是 dict{str: list}或list[dict] 的类型格式")
+            raise ValueError('[参数类型错误]', "'data' 只能是 dict{str: list}/list[dict]/ResultSet 的类型格式")
         return row_num + 1
 
     def delete_by(self, tb_name: str, condition=None):
