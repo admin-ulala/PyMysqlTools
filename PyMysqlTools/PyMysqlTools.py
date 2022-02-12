@@ -83,6 +83,22 @@ class connect:
             raise ValueError('[参数类型错误]', "'data' 只能是 dict{str: list}/list[dict]/ResultSet 的类型格式")
         return row_num + 1
 
+    def update_insert(self, tb_name: str, data: dict):
+        """
+        插入单条记录, 如果存在则更新, 不存在则插入
+        :param tb_name: 表名
+        :param data: 待插入/更新的数据
+        :return: None
+        """
+        try:
+            self.insert_one(tb_name, data)
+        except pymysql.err.IntegrityError as err:
+            self.update_by(
+                tb_name,
+                data,
+                {self.show_table_primary_field(tb_name).all()[0]: err.args[1].split("'")[1]}
+            )
+
     def delete_by(self, tb_name: str, condition=None):
         """
         根据条件删除记录
@@ -217,6 +233,15 @@ class connect:
         :return: 所有数据表
         """
         sql = self._clause_generator.build_show_clause('TABLES')
+        return ResultSet(self._sql_actuator.actuator_dql(sql))
+
+    def show_table_primary_field(self, tb_name: str):
+        """
+        查询主键字段名称
+        :param tb_name: 表名
+        :return: 结果集
+        """
+        sql = self._sql_generator.show_table_primary_field(self.database, tb_name)
         return ResultSet(self._sql_actuator.actuator_dql(sql))
 
     def is_exist_database(self, db_name: str) -> bool:
