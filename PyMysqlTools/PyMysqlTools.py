@@ -1,9 +1,9 @@
 import pymysql
 
-from ClauseGenerator import ClauseGenerator
-from SqlActuator import SqlActuator
-from SqlGenerator import SqlGenerator
-from ResultSet import ResultSet
+from PyMysqlTools.ClauseGenerator import ClauseGenerator
+from PyMysqlTools.SqlActuator import SqlActuator
+from PyMysqlTools.SqlGenerator import SqlGenerator
+from PyMysqlTools.ResultSet import ResultSet
 
 
 class connect:

@@ -1,4 +1,4 @@
-from ClauseGenerator import ClauseGenerator
+from PyMysqlTools.ClauseGenerator import ClauseGenerator
 
 
 class SqlGenerator:
