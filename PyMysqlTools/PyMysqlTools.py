@@ -252,3 +252,16 @@ class connect:
         """
         sql = self._sql_generator.create_table(tb_name, schema)
         return self._sql_actuator.actuator_dml(sql)
+
+    def migration_table(self, for_tb_name: str, to_tb_name: str):
+        """
+        将一张表的数据迁移到另一张表中
+        :param for_tb_name: 数据源表的表名
+        :param to_tb_name: 目标表的表名
+        :return: 已迁移的数据行数
+        """
+        row_num = 0
+        for row in self.find_all(for_tb_name):
+            self.insert_one(to_tb_name, dict(zip(self.show_table_fields(to_tb_name), row)))
+            row_num += 1
+        return row_num
