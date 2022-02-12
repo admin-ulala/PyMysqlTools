@@ -62,6 +62,11 @@ class SqlGenerator:
         self.sql = f"""DESC `{tb_name}`"""
         return self.sql.strip()
 
+    def show_table_primary_field(self, db_name: str, tb_name: str):
+        self.sql = self.show_table_fields(db_name, tb_name)
+        self.sql += " AND COLUMN_KEY = 'PRI'"
+        return self.sql.strip()
+
     # ====================================================================================================
 
     def create_table(self, tb_name: str, schema):
