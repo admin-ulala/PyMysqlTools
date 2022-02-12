@@ -61,3 +61,19 @@ class SqlGenerator:
     def desc_table(self, tb_name: str) -> str:
         self.sql = f"""DESC `{tb_name}`"""
         return self.sql.strip()
+
+    # ====================================================================================================
+
+    def create_table(self, tb_name: str, schema):
+        schema = self._clause_generator.get_schema(schema)
+        self.sql = f"""
+        CREATE TABLE `{tb_name}` (\n{schema}\n) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
+        """
+        return self.sql.strip()
+
+    def create_table_not_exists(self, tb_name: str, schema):
+        schema = self._clause_generator.get_schema(schema)
+        self.sql = f"""
+        CREATE TABLE IF NOT EXISTS `{tb_name}` (\n{schema}\n) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
+        """
+        return self.sql.strip()

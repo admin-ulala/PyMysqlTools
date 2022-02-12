@@ -230,3 +230,33 @@ class connect:
         :return: True: 存在<br>False: 不存在
         """
         return tb_name in self.show_tables()
+
+    # ====================================================================================================
+
+    def create_table(self, tb_name: str, schema):
+        """
+        创建数据表
+        :param tb_name: 表名
+        :param schema: 表结构
+        :return: 0表示创建成功
+        """
+        sql = self._sql_generator.create_table(tb_name, schema)
+        return self._sql_actuator.actuator_dml(sql)
+
+    def create_table_not_exists(self, tb_name: str, schema):
+        """
+        如果表不存在就创建数据表
+        :param tb_name: 表名
+        :param schema: 表结构
+        :return: 0表示创建成功
+        """
+        sql = self._sql_generator.create_table(tb_name, schema)
+        return self._sql_actuator.actuator_dml(sql)
+
+
+if __name__ == '__main__':
+    mysql = connect(
+        'spider',
+        'root',
+        '123456'
+    )

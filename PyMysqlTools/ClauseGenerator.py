@@ -3,6 +3,44 @@ class ClauseGenerator:
     def __init__(self):
         self.clause = ""
 
+    @staticmethod
+    def get_fields(fields):
+        if isinstance(fields, dict):
+            fields = list(fields.values())
+        return f"""{", ".join([f"`{i}`" if '*' not in i else f"{i}" for i in fields])}"""
+
+    @staticmethod
+    def get_values(values):
+        if isinstance(values, dict):
+            values = list(values.values())
+        return f"""{", ".join([f"%s" for _ in values])}"""
+
+    def get_schema(self, data):
+        schema = []
+        if isinstance(data, list):
+            for i in data:
+                if i == 'id':
+                    schema.append(f""" `{i}` int NOT NULL AUTO_INCREMENT""")
+                else:
+                    schema.append(f""" `{i}` varchar(255) DEFAULT NULL""")
+
+            if 'id' in data:
+                schema.append(' PRIMARY KEY (`id`)')
+
+            self.clause = ',\n'.join(schema)
+            return self.clause
+
+        if isinstance(data, dict):
+            for key, value in data.items():
+                schema.append(f""" `{key}` {value}""")
+
+            self.clause = ',\n'.join(schema)
+            return self.clause
+
+        raise ValueError('[数据类型错误]', "'schema' 只能是 list/dict 类型")
+
+    # ====================================================================================================
+
     def build_where_clause(self, condition):
         condition_str = ''
 
@@ -23,18 +61,6 @@ class ClauseGenerator:
 
         self.clause = f"""WHERE {condition_str}"""
         return self.clause
-
-    @staticmethod
-    def get_fields(fields):
-        if isinstance(fields, dict):
-            fields = list(fields.values())
-        return f"""{", ".join([f"`{i}`" if '*' not in i else f"{i}" for i in fields])}"""
-
-    @staticmethod
-    def get_values(values):
-        if isinstance(values, dict):
-            values = list(values.values())
-        return f"""{", ".join([f"%s" for i in values])}"""
 
     def build_set_clause(self, data: dict):
         temp = []
