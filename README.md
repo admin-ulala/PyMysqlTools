@@ -1,23 +1,46 @@
 
 # PyMysqlTools
 
----
-PyMysqlTools 是一个能以更方便的方式操作mysql的库
+
+PyMysqlTools 是一个能以更方便的方式来操作mysql的库
 
 
-### 使用示例
+
+**注意**
+
+PyMysqlTools 目前仅支持 Python3.6+ 且 MySQL5.6+ 版本
+
+
+
+### 快速开始
+
+- 下载本项目
+
+  ```bash
+  pip install PyMysqlTools
+  ```
+
+- 导入本项目到您的代码
+
+  ```python
+  import PyMysqlTools
+  ```
+
+  
 
 1. 建立连接
 
    ```python
-       mysql = PyMysqlTools.connect(
-           database='db_test',
-           username='root',
-           password='123456'
-       )
-       print(mysql)
+   import PyMysqlTools
    
-       # 可以使用上面的示例代码获得一个mysql数据库的连接
+   mysql = PyMysqlTools.connect(
+       database='db_test',
+       username='root',
+       password='123456'
+   )
+   print(mysql)
+   
+   # 可以使用上面的示例代码获得一个mysql数据库的连接
    ```
 
 2. 简单使用
@@ -72,6 +95,18 @@ PyMysqlTools 是一个能以更方便的方式操作mysql的库
      
 
    - 其他更多方法详见 api 文档
+   
+     - ps: api文档目前还没有。
 
 
+
+### 关于社区
+
+如果您在使用时遇到了意料之外的结果，请[提交Issue](https://gitee.com/uraurara/PyMysqlTools/issues/new?issue%5Bassignee_id%5D=0&issue%5Bmilestone_id%5D=0)帮助我们改进此项目。
+
+
+
+### Thanks
+
+- [PyMySQL](https://gitee.com/src-openeuler/python-PyMySQL)
 
