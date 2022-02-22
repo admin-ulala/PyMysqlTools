@@ -113,3 +113,25 @@ def timer_exec(args=None, time_=None):
         return True
 
     return inner
+
+
+def plan_exec(args=None, **kwargs):
+    """
+    先执行一次程序, 每隔一段时间后再执行一次程序
+    注意：此装饰器会直接启动被修饰的方法, 而无需通过程序入口执行
+    :param args: 待运行方法的参数列表
+    :param kwargs: 时间间隔 支持：second,minute,hour,day
+    """
+
+    def inner(function):
+        step_time = 0
+        step_time += kwargs.get('second', 0)
+        step_time += kwargs.get('minute', 0) * 60
+        step_time += kwargs.get('hour', 0) * 60 * 60
+        step_time += kwargs.get('day', 0) * 60 * 60 * 24
+
+        while True:
+            threading.Thread(target=timer, kwargs={'function': function, 'args': args}).start()
+            time.sleep(step_time)
+
+    return inner
