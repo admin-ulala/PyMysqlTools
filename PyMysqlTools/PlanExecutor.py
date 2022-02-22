@@ -67,3 +67,49 @@ def after_exit(args=None, second=0):
         return inner
 
     return _after_exit
+
+
+def timer_exec(args=None, time_=None):
+    """
+    特定时间点开始运行程序
+    :param args: 待运行方法的参数列表
+    :param time_: 特定时间点
+    <br>支持类型：
+    <br>&nbsp;&nbsp;&nbsp;&nbsp;时间戳
+    <br>&nbsp;&nbsp;&nbsp;&nbsp;时间元组
+    <br>&nbsp;&nbsp;&nbsp;&nbsp;%Y-%m-%d %H:%M:%S格式的字符串
+    :return:
+    """
+
+    # 时间转换
+    def _time_format():
+        _time = None
+        if isinstance(time_, time.struct_time):
+            _time = int(time.mktime(time_))
+        if isinstance(time_, str):
+            _time = int(time.mktime(time.strptime(time_, '%Y-%m-%d %H:%M:%S')))
+        if isinstance(time_, float) or isinstance(time_, int):
+            _time = int(time_)
+        return _time
+
+    # 等待到指定时间
+    def _wait_time():
+        current_timestamp = int(time.time())
+        start_timestamp = _time_format()
+        wait_time = start_timestamp - current_timestamp
+
+        if wait_time > 1:
+            time.sleep(wait_time - 1)
+            while True:
+                if int(time.time()) == start_timestamp:
+                    break
+        print("It's time to start the method ...")
+
+    # 执行方法
+    def inner(function):
+        _wait_time()
+        sub = threading.Thread(target=timer, kwargs={'function': function, 'args': args})
+        sub.start()
+        return True
+
+    return inner
