@@ -45,3 +45,25 @@ def after_exec(args=None, second=0):
     return _after_exec
 
 
+def after_exit(args=None, second=0):
+    """
+    先执行程序, 一段时间后再结束程序
+    :param args: 待结束方法的参数列表
+    :param second: 多少秒后结束方法
+    :return:
+    """
+
+    def _after_exit(function):
+        def inner():
+            print(f"{function.__name__} method will exit in {second} seconds")
+            if args is None:
+                sub = threading.Thread(target=timer, kwargs={'function': function})
+            else:
+                sub = threading.Thread(target=timer, kwargs={'function': function, 'args': args})
+            sub.setDaemon(True)
+            sub.start()
+            threading.Thread(target=timer, kwargs={'function': quit, 'before': second}).start()
+
+        return inner
+
+    return _after_exit
