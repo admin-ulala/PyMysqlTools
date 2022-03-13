@@ -23,5 +23,5 @@ SOFTWARE.
 """
 from PyMysqlTools.PyMysqlTools import connect
 
-__version__ = "0.4.1"
+__version__ = "0.4.2"
 name = "PyMysqlTools"
