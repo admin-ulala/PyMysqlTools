@@ -294,3 +294,26 @@ class connect:
             self.insert_one(to_tb_name, dict(zip(self.show_table_fields(to_tb_name), row)))
             row_num += 1
         return row_num
+
+    # ====================================================================================================
+
+    def reconnect(self):
+        """
+        重新与MySQL服务建立连接
+        :return:
+        """
+        self._connect.ping(reconnect=True)
+
+    def debugger_connect(self):
+        """
+        这个方法是方便作者debugger用的, 未来可能会移除
+        :return:
+        """
+        return self._connect
+
+    def debugger_cursor(self):
+        """
+        这个方法是方便作者debugger用的, 未来可能会移除
+        :return:
+        """
+        return self._cursor
