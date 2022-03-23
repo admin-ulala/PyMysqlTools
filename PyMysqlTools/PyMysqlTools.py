@@ -314,6 +314,12 @@ class connect:
         return row_num
 
     # ====================================================================================================
+    def close(self):
+        """
+        关闭数据库连接
+        :return:
+        """
+        self._connect.close()
 
     def reconnect(self):
         """
