@@ -267,6 +267,24 @@ class connect:
         """
         return tb_name in self.show_tables()
 
+    def truncate_table(self, tb_name: str) -> bool:
+        """
+        清空表数据
+        :param tb_name: 表名
+        :return: 执行结果
+        """
+        sql = self._sql_generator.truncate_table(tb_name)
+        return self._sql_actuator.actuator_dml(sql) > 0
+
+    def delete_table(self, tb_name: str) -> bool:
+        """
+        删除表所有记录
+        :param tb_name: 表名
+        :return: 执行结果
+        """
+        sql = self._sql_generator.delete_table(tb_name)
+        return self._sql_actuator.actuator_dml(sql) > 0
+
     # ====================================================================================================
 
     def create_table(self, tb_name: str, schema):
@@ -303,6 +321,12 @@ class connect:
         return row_num
 
     # ====================================================================================================
+    def close(self):
+        """
+        关闭数据库连接
+        :return:
+        """
+        self._connect.close()
 
     def reconnect(self):
         """

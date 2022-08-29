@@ -82,3 +82,11 @@ class SqlGenerator:
         CREATE TABLE IF NOT EXISTS `{tb_name}` (\n{schema}\n) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
         """
         return self.sql.strip()
+
+    def truncate_table(self, tb_name: str):
+        self.sql = f"""TRUNCATE TABLE `{tb_name}`"""
+        return self.sql.strip()
+
+    def delete_table(self, tb_name: str):
+        self.sql = f"""DELETE TABLE `{tb_name}`"""
+        return self.sql.strip()
