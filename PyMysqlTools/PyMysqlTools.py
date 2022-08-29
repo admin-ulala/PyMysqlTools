@@ -5,6 +5,13 @@ from PyMysqlTools.SqlActuator import SqlActuator
 from PyMysqlTools.SqlGenerator import SqlGenerator
 from PyMysqlTools.ResultSet import ResultSet
 
+from enum import Enum
+
+
+class ConnectType(Enum):
+    persistent_db = 1
+    pooled_db = 2
+
 
 class connect:
 
@@ -317,3 +324,30 @@ class connect:
         :return:
         """
         return self._cursor
+
+
+class connect_pool:
+    def __init__(self, connect_type: ConnectType, connect_args: dict, **pool_args):
+        self.creator = pymysql
+        self.connect_type = connect_type
+        self.connect_args = connect_args
+        if self.connect_type == ConnectType.persistent_db:
+            self.max_usage = pool_args.get('max_usage', None)
+            self.set_session = pool_args.get('set_session', None)
+            self.failures = pool_args.get('failures', None)
+            self.ping = pool_args.get('ping', None)
+            self.closeable = pool_args.get('closeable', None)
+            self.thread_local = pool_args.get('thread_local', None)
+        elif self.connect_type == ConnectType.pooled_db:
+            self.min_cached = pool_args.get('min_cached', None)
+            self.max_cached = pool_args.get('max_cached', None)
+            self.max_shared = pool_args.get('max_shared', None)
+            self.max_connections = pool_args.get('max_connections', None)
+            self.blocking = pool_args.get('blocking', None)
+            self.max_usage = pool_args.get('max_usage', None)
+            self.set_session = pool_args.get('set_session', None)
+            self.reset = pool_args.get('reset', None)
+            self.failures = pool_args.get('failures', None)
+            self.ping = pool_args.get('ping', None)
+        else:
+            raise Exception
