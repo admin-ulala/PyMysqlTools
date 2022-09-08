@@ -109,4 +109,5 @@ PyMysqlTools 目前仅支持 Python3.6+ 且 MySQL5.6+ 版本
 ### Thanks
 
 - [PyMySQL](https://gitee.com/src-openeuler/python-PyMySQL)
+- [DBUtils](https://github.com/WebwareForPython/DBUtils)
 
