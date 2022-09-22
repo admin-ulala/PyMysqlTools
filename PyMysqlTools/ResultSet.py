@@ -38,7 +38,7 @@ class ResultSet:
         return len(self._result)
 
     def all(self):
-        if not isinstance(self._result, list):
+        if not isinstance(self._result[0], list):
             return [self._result]
         return self._result
 
