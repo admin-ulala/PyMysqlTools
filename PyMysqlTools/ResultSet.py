@@ -38,6 +38,8 @@ class ResultSet:
         return len(self._result)
 
     def all(self):
+        if len(self._result) == 1:
+            return [self._result]
         return self._result
 
     def limit(self, num: int = 1):
