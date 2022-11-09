@@ -1,19 +1,29 @@
 class ResultSet:
 
-    def __init__(self, result=None):
+    def __init__(self, result=None, type_=list, fields_=None | list):
+        """
+        ResultSet 结果集
+        :param result: 暂时的结果集存储在这里
+        :param type_: 返回的结果集类型
+        :param fields_: 如果 type_ 为dict时, 需要字段名
+        """
         if result is None:
             result = []
 
         self._result = []
 
-        for row in result:
-            if isinstance(row, tuple):
-                if len(row) > 1:
-                    self._result.append(list(row))
-                else:
-                    self._result.append(row[0])
+        if type_ == list:
+            for row in result:
+                self._result.append(list(row))
+        elif type_ == dict:
+            if fields_ is None:
+                self._fields = fields_
+                raise ValueError('[参数错误]', "'type_'为dict时 'fields_' 需要传入参数")
             else:
-                self._result.append(row)
+                for row in result:
+                    self._result.append(_extract_as_dict(self._fields, row))
+        else:
+            raise ValueError('[参数数据类型错误]', "'type_' 只能是 list/dict 类型")
 
         if len(result) == 1:
             self._result = list(result[0])
@@ -60,3 +70,19 @@ class ResultSet:
 
     def get(self, index):
         return self._result[index]
+
+
+def _extract_as_dict(fields: list, value: list):
+    fields_len = len(fields)
+    value_len = len(value)
+
+    if fields_len == value_len:
+        return dict(zip(fields, value))
+
+    row_data = {}
+    for index_ in range(fields_len):
+        if index_ >= value_len:
+            row_data[fields[index_]] = None
+        else:
+            row_data[fields[index_]] = value[index_]
+    return row_data
