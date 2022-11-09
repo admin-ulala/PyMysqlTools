@@ -351,6 +351,20 @@ class connect:
         """
         return self._cursor
 
+    def debugger_sql_actuator(self):
+        """
+        这个方法是方便作者debugger用的, 未来可能会移除
+        :return:
+        """
+        return self._sql_actuator
+
+    def debugger_sql_generator(self):
+        """
+        这个方法是方便作者debugger用的, 未来可能会移除
+        :return:
+        """
+        return self._sql_generator
+
 
 class connect_pool:
     def __init__(self, connect_type: ConnectType, connect_args: dict, **pool_args):
