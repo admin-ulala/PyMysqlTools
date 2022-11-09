@@ -43,6 +43,7 @@ class SqlGenerator:
         FROM information_schema.COLUMNS 
         WHERE table_name = '{tb_name}' 
         AND table_schema = '{db_name}' 
+        ORDER BY ORDINAL_POSITION
         """
         return self.sql.strip()
 
