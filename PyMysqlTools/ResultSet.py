@@ -32,7 +32,7 @@ class ResultSet:
             if fields_ is None:
                 raise ValueError('[参数错误]', "'type_'为dict时 'fields_' 需要传入参数")
             else:
-                self._fields = fields_
+                self._fields = fields_[0]
                 for row in result:
                     self._result.append(_extract_as_dict(self._fields, row))
         else:

@@ -163,7 +163,7 @@ class connect:
         return ResultSet(
             self._sql_actuator.actuator_dql(sql),
             type_=type_,
-            fields_=self.show_table_fields(tb_name)
+            fields_=self.show_table_fields(tb_name).all()
         )
 
     def find_by_id(self, tb_name: str, id_: int, fields: list = None) -> ResultSet:
@@ -190,7 +190,7 @@ class connect:
         return ResultSet(
             self._sql_actuator.actuator_dql(sql),
             type_=type_,
-            fields_=self.show_table_fields(tb_name)
+            fields_=self.show_table_fields(tb_name).all()
         )
 
     def find_all(self, tb_name: str) -> ResultSet:
@@ -562,7 +562,7 @@ class connect_pool:
         result = ResultSet(
             self._sql_actuator.actuator_dql(sql),
             type_=type_,
-            fields_=self.show_table_fields(tb_name)
+            fields_=self.show_table_fields(tb_name).all()
         )
         self._connect.close()
         return result
@@ -577,7 +577,7 @@ class connect_pool:
         """
         return self.find_by(tb_name, fields, {'id': id_})
 
-    def find_one(self, tb_name: str, fields: list = None, condition=None) -> ResultSet:
+    def find_one(self, tb_name: str, fields: list = None, condition=None, type_=config.DEFAULT_RESULT_SET_TYPE) -> ResultSet:
         """
         根据条件查询单条记录
         :param tb_name: 表名
@@ -587,7 +587,11 @@ class connect_pool:
         """
         sql = self._sql_generator.find_by(tb_name, fields, condition)
         sql += self._clause_generator.build_limit_clause(1)
-        return ResultSet(self._sql_actuator.actuator_dql(sql), type_=list)
+        return ResultSet(
+            self._sql_actuator.actuator_dql(sql),
+            type_=type_,
+            fields_=self.show_table_fields(tb_name).all()
+        )
 
     def find_all(self, tb_name: str) -> ResultSet:
         """
