@@ -1,5 +1,6 @@
 import pymysql
 
+import config
 from PyMysqlTools.ClauseGenerator import ClauseGenerator
 from PyMysqlTools.SqlActuator import SqlActuator
 from PyMysqlTools.SqlGenerator import SqlGenerator
@@ -108,7 +109,7 @@ class connect:
                 {self.show_table_primary_field(tb_name).all()[0]: err.args[1].split("'")[1]}
             )
 
-    def delete_by(self, tb_name: str, condition=None):
+    def delete_by(self, tb_name: str, condition=None) -> int:
         """
         根据条件删除记录
         :param tb_name: 表名
@@ -118,7 +119,7 @@ class connect:
         sql = self._sql_generator.delete_by(tb_name, condition)
         return self._sql_actuator.actuator_dml(sql)
 
-    def delete_by_id(self, tb_name: str, id_: int):
+    def delete_by_id(self, tb_name: str, id_: int) -> int:
         """
         根据id删除记录
         :param tb_name: 表名
@@ -127,7 +128,7 @@ class connect:
         """
         return self.delete_by(tb_name, {'id': id_})
 
-    def update_by(self, tb_name: str, data: dict, condition=None):
+    def update_by(self, tb_name: str, data: dict, condition=None) -> int:
         """
         根据条件更新记录
         :param tb_name: 表名
@@ -139,7 +140,7 @@ class connect:
         args = list(data.values())
         return self._sql_actuator.actuator_dml(sql, args)
 
-    def update_by_id(self, tb_name: str, data: dict, id_: int):
+    def update_by_id(self, tb_name: str, data: dict, id_: int) -> int:
         """
         根据id更新记录
         :param tb_name: 表名
@@ -149,18 +150,23 @@ class connect:
         """
         return self.update_by(tb_name, data, {'id': id_})
 
-    def find_by(self, tb_name: str, fields: list = None, condition=None):
+    def find_by(self, tb_name: str, fields: list = None, condition=None, type_=config.DEFAULT_RESULT_SET_TYPE) -> ResultSet:
         """
         根据条件查询记录
         :param tb_name: 表名
         :param fields: 需要查询的字段
         :param condition: 查询条件
+        :param type_: 返回集结构类型 [dict/list]
         :return: 结果集
         """
         sql = self._sql_generator.find_by(tb_name, fields, condition)
-        return ResultSet(self._sql_actuator.actuator_dql(sql))
+        return ResultSet(
+            self._sql_actuator.actuator_dql(sql),
+            type_=type_,
+            fields_=self.show_table_fields(tb_name)
+        )
 
-    def find_by_id(self, tb_name: str, id_: int, fields: list = None):
+    def find_by_id(self, tb_name: str, id_: int, fields: list = None) -> ResultSet:
         """
         根据id查询记录
         :param tb_name: 表名
@@ -168,27 +174,32 @@ class connect:
         :param fields: 需要查询的字段
         :return: 结果集
         """
-        return ResultSet(self.find_by(tb_name, fields, {'id': id_}))
+        return self.find_by(tb_name, fields, {'id': id_})
 
-    def find_one(self, tb_name: str, fields: list = None, condition=None):
+    def find_one(self, tb_name: str, fields: list = None, condition=None, type_=config.DEFAULT_RESULT_SET_TYPE) -> ResultSet:
         """
         根据条件查询单条记录
         :param tb_name: 表名
         :param fields: 需要查询的字段
         :param condition: 查询条件
+        :param type_: 返回集结构类型 [dict/list]
         :return: 结果集
         """
         sql = self._sql_generator.find_by(tb_name, fields, condition)
         sql += self._clause_generator.build_limit_clause(1)
-        return ResultSet(self._sql_actuator.actuator_dql(sql))
+        return ResultSet(
+            self._sql_actuator.actuator_dql(sql),
+            type_=type_,
+            fields_=self.show_table_fields(tb_name)
+        )
 
-    def find_all(self, tb_name: str):
+    def find_all(self, tb_name: str) -> ResultSet:
         """
         查询全表记录
         :param tb_name: 表名
         :return: 结果集
         """
-        return ResultSet(self.find_by(tb_name))
+        return self.find_by(tb_name)
 
     # ====================================================================================================
 
@@ -199,7 +210,10 @@ class connect:
         :return: 结果集
         """
         sql = self._sql_generator.show_table_fields(self.database, tb_name)
-        return ResultSet(self._sql_actuator.actuator_dql(sql))
+        return ResultSet(
+            self._sql_actuator.actuator_dql(sql),
+            type_=list
+        )
 
     def show_table_desc(self, tb_name: str) -> ResultSet:
         """
@@ -208,7 +222,10 @@ class connect:
         :return: 表结构
         """
         sql = self._sql_generator.desc_table(tb_name)
-        return ResultSet(self._sql_actuator.actuator_dql(sql))
+        return ResultSet(
+            self._sql_actuator.actuator_dql(sql),
+            type_=list
+        )
 
     def show_table_size(self, tb_name: str) -> int:
         """
@@ -217,7 +234,7 @@ class connect:
         :return: 记录数
         """
         sql = self._sql_generator.show_table_size(tb_name)
-        return ResultSet(self._sql_actuator.actuator_dql(sql)).get(0)
+        return ResultSet(self._sql_actuator.actuator_dql(sql), type_=list).get(0)
 
     def show_table_vague_size(self, tb_name: str) -> int:
         """
@@ -226,7 +243,7 @@ class connect:
         :return: 记录数
         """
         sql = self._sql_generator.show_table_vague_size(tb_name)
-        return ResultSet(self._sql_actuator.actuator_dql(sql)).get(0)
+        return ResultSet(self._sql_actuator.actuator_dql(sql), type_=list).get(0)
 
     def show_databases(self) -> ResultSet:
         """
@@ -234,7 +251,7 @@ class connect:
         :return: 所有数据库
         """
         sql = self._clause_generator.build_show_clause('DATABASES')
-        return ResultSet(self._sql_actuator.actuator_dql(sql))
+        return ResultSet(self._sql_actuator.actuator_dql(sql), type_=list)
 
     def show_tables(self) -> ResultSet:
         """
@@ -242,16 +259,16 @@ class connect:
         :return: 所有数据表
         """
         sql = self._clause_generator.build_show_clause('TABLES')
-        return ResultSet(self._sql_actuator.actuator_dql(sql))
+        return ResultSet(self._sql_actuator.actuator_dql(sql), type_=list)
 
-    def show_table_primary_field(self, tb_name: str):
+    def show_table_primary_field(self, tb_name: str) -> ResultSet:
         """
         查询主键字段名称
         :param tb_name: 表名
         :return: 结果集
         """
         sql = self._sql_generator.show_table_primary_field(self.database, tb_name)
-        return ResultSet(self._sql_actuator.actuator_dql(sql))
+        return ResultSet(self._sql_actuator.actuator_dql(sql), type_=list)
 
     def is_exist_database(self, db_name: str) -> bool:
         """
@@ -289,7 +306,7 @@ class connect:
 
     # ====================================================================================================
 
-    def create_table(self, tb_name: str, schema):
+    def create_table(self, tb_name: str, schema) -> int:
         """
         创建数据表
         :param tb_name: 表名
@@ -299,7 +316,7 @@ class connect:
         sql = self._sql_generator.create_table(tb_name, schema)
         return self._sql_actuator.actuator_dml(sql)
 
-    def create_table_not_exists(self, tb_name: str, schema):
+    def create_table_not_exists(self, tb_name: str, schema) -> int:
         """
         如果表不存在就创建数据表
         :param tb_name: 表名
@@ -309,7 +326,7 @@ class connect:
         sql = self._sql_generator.create_table(tb_name, schema)
         return self._sql_actuator.actuator_dml(sql)
 
-    def migration_table(self, for_tb_name: str, to_tb_name: str):
+    def migration_table(self, for_tb_name: str, to_tb_name: str) -> int:
         """
         将一张表的数据迁移到另一张表中
         :param for_tb_name: 数据源表的表名
@@ -421,7 +438,7 @@ class connect_pool:
         self._sql_generator = SqlGenerator()
         self._sql_actuator = SqlActuator(self._connect)
 
-    def insert_one(self, tb_name, data: dict):
+    def insert_one(self, tb_name, data: dict) -> int:
         """
         插入单条记录
         :param tb_name: 表名
@@ -434,7 +451,7 @@ class connect_pool:
         self._connect.close()
         return result
 
-    def batch_insert(self, tb_name: str, data):
+    def batch_insert(self, tb_name: str, data) -> int:
         """
         批量插入记录
         :param tb_name: 表名
@@ -487,7 +504,7 @@ class connect_pool:
                 {self.show_table_primary_field(tb_name).all()[0]: err.args[1].split("'")[1]}
             )
 
-    def delete_by(self, tb_name: str, condition=None):
+    def delete_by(self, tb_name: str, condition=None) -> int:
         """
         根据条件删除记录
         :param tb_name: 表名
@@ -499,7 +516,7 @@ class connect_pool:
         self._connect.close()
         return result
 
-    def delete_by_id(self, tb_name: str, id_: int):
+    def delete_by_id(self, tb_name: str, id_: int) -> int:
         """
         根据id删除记录
         :param tb_name: 表名
@@ -508,7 +525,7 @@ class connect_pool:
         """
         return self.delete_by(tb_name, {'id': id_})
 
-    def update_by(self, tb_name: str, data: dict, condition=None):
+    def update_by(self, tb_name: str, data: dict, condition=None) -> int:
         """
         根据条件更新记录
         :param tb_name: 表名
@@ -522,7 +539,7 @@ class connect_pool:
         self._connect.close()
         return result
 
-    def update_by_id(self, tb_name: str, data: dict, id_: int):
+    def update_by_id(self, tb_name: str, data: dict, id_: int) -> int:
         """
         根据id更新记录
         :param tb_name: 表名
@@ -532,20 +549,25 @@ class connect_pool:
         """
         return self.update_by(tb_name, data, {'id': id_})
 
-    def find_by(self, tb_name: str, fields: list = None, condition=None):
+    def find_by(self, tb_name: str, fields: list = None, condition=None, type_=config.DEFAULT_RESULT_SET_TYPE) -> ResultSet:
         """
         根据条件查询记录
         :param tb_name: 表名
         :param fields: 需要查询的字段
         :param condition: 查询条件
+        :param type_: 返回集结构类型 [dict/list]
         :return: 结果集
         """
         sql = self._sql_generator.find_by(tb_name, fields, condition)
-        result = ResultSet(self._sql_actuator.actuator_dql(sql))
+        result = ResultSet(
+            self._sql_actuator.actuator_dql(sql),
+            type_=type_,
+            fields_=self.show_table_fields(tb_name)
+        )
         self._connect.close()
         return result
 
-    def find_by_id(self, tb_name: str, id_: int, fields: list = None):
+    def find_by_id(self, tb_name: str, id_: int, fields: list = None) -> ResultSet:
         """
         根据id查询记录
         :param tb_name: 表名
@@ -553,9 +575,9 @@ class connect_pool:
         :param fields: 需要查询的字段
         :return: 结果集
         """
-        return ResultSet(self.find_by(tb_name, fields, {'id': id_}))
+        return self.find_by(tb_name, fields, {'id': id_})
 
-    def find_one(self, tb_name: str, fields: list = None, condition=None):
+    def find_one(self, tb_name: str, fields: list = None, condition=None) -> ResultSet:
         """
         根据条件查询单条记录
         :param tb_name: 表名
@@ -565,15 +587,15 @@ class connect_pool:
         """
         sql = self._sql_generator.find_by(tb_name, fields, condition)
         sql += self._clause_generator.build_limit_clause(1)
-        return ResultSet(self._sql_actuator.actuator_dql(sql))
+        return ResultSet(self._sql_actuator.actuator_dql(sql), type_=list)
 
-    def find_all(self, tb_name: str):
+    def find_all(self, tb_name: str) -> ResultSet:
         """
         查询全表记录
         :param tb_name: 表名
         :return: 结果集
         """
-        return ResultSet(self.find_by(tb_name))
+        return self.find_by(tb_name)
 
     # ====================================================================================================
 
@@ -584,7 +606,7 @@ class connect_pool:
         :return: 结果集
         """
         sql = self._sql_generator.show_table_fields(self.connect_args.get('database', None), tb_name)
-        result = ResultSet(self._sql_actuator.actuator_dql(sql))
+        result = ResultSet(self._sql_actuator.actuator_dql(sql), type_=list)
         self._connect.close()
         return result
 
@@ -595,7 +617,7 @@ class connect_pool:
         :return: 表结构
         """
         sql = self._sql_generator.desc_table(tb_name)
-        result = ResultSet(self._sql_actuator.actuator_dql(sql))
+        result = ResultSet(self._sql_actuator.actuator_dql(sql), type_=list)
         self._connect.close()
         return result
 
@@ -606,7 +628,7 @@ class connect_pool:
         :return: 记录数
         """
         sql = self._sql_generator.show_table_size(tb_name)
-        result = ResultSet(self._sql_actuator.actuator_dql(sql)).get(0)
+        result = ResultSet(self._sql_actuator.actuator_dql(sql), type_=list).get(0)
         self._connect.close()
         return result
 
@@ -617,7 +639,7 @@ class connect_pool:
         :return: 记录数
         """
         sql = self._sql_generator.show_table_vague_size(tb_name)
-        result = ResultSet(self._sql_actuator.actuator_dql(sql)).get(0)
+        result = ResultSet(self._sql_actuator.actuator_dql(sql), type_=list).get(0)
         self._connect.close()
         return result
 
@@ -627,7 +649,7 @@ class connect_pool:
         :return: 所有数据库
         """
         sql = self._clause_generator.build_show_clause('DATABASES')
-        result = ResultSet(self._sql_actuator.actuator_dql(sql))
+        result = ResultSet(self._sql_actuator.actuator_dql(sql), type_=list)
         self._connect.close()
         return result
 
@@ -637,18 +659,18 @@ class connect_pool:
         :return: 所有数据表
         """
         sql = self._clause_generator.build_show_clause('TABLES')
-        result = ResultSet(self._sql_actuator.actuator_dql(sql))
+        result = ResultSet(self._sql_actuator.actuator_dql(sql), type_=list)
         self._connect.close()
         return result
 
-    def show_table_primary_field(self, tb_name: str):
+    def show_table_primary_field(self, tb_name: str) -> ResultSet:
         """
         查询主键字段名称
         :param tb_name: 表名
         :return: 结果集
         """
         sql = self._sql_generator.show_table_primary_field(self.connect_args.get('database', None), tb_name)
-        result = ResultSet(self._sql_actuator.actuator_dql(sql))
+        result = ResultSet(self._sql_actuator.actuator_dql(sql), type_=list)
         self._connect.close()
         return result
 
@@ -692,7 +714,7 @@ class connect_pool:
 
     # ====================================================================================================
 
-    def create_table(self, tb_name: str, schema):
+    def create_table(self, tb_name: str, schema) -> int:
         """
         创建数据表
         :param tb_name: 表名
@@ -704,7 +726,7 @@ class connect_pool:
         self._connect.close()
         return result
 
-    def create_table_not_exists(self, tb_name: str, schema):
+    def create_table_not_exists(self, tb_name: str, schema) -> int:
         """
         如果表不存在就创建数据表
         :param tb_name: 表名
@@ -716,7 +738,7 @@ class connect_pool:
         self._connect.close()
         return result
 
-    def migration_table(self, for_tb_name: str, to_tb_name: str):
+    def migration_table(self, for_tb_name: str, to_tb_name: str) -> int:
         """
         将一张表的数据迁移到另一张表中
         :param for_tb_name: 数据源表的表名
@@ -745,17 +767,3 @@ class connect_pool:
         :return:
         """
         self._connect.ping(reconnect=True)
-
-    def debugger_connect(self):
-        """
-        这个方法是方便作者debugger用的, 未来可能会移除
-        :return:
-        """
-        return self._connect
-
-    def debugger_cursor(self):
-        """
-        这个方法是方便作者debugger用的, 未来可能会移除
-        :return:
-        """
-        return self._cursor
