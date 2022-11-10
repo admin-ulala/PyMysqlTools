@@ -1,6 +1,14 @@
+import config
+
+
 class ResultSet:
 
-    def __init__(self, result=None, type_=dict, fields_=None):
+    def __init__(
+            self,
+            result=None,
+            type_=config.DEFAULT_RESULT_SET_TYPE,
+            fields_=None
+    ):
         """
         ResultSet 结果集
         :param result: 暂时的结果集存储在这里
