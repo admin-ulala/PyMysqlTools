@@ -1,6 +1,6 @@
 class ResultSet:
 
-    def __init__(self, result=None, type_=list, fields_=None | list):
+    def __init__(self, result=None, type_=dict, fields_=None):
         """
         ResultSet 结果集
         :param result: 暂时的结果集存储在这里
@@ -17,9 +17,9 @@ class ResultSet:
                 self._result.append(list(row))
         elif type_ == dict:
             if fields_ is None:
-                self._fields = fields_
                 raise ValueError('[参数错误]', "'type_'为dict时 'fields_' 需要传入参数")
             else:
+                self._fields = fields_
                 for row in result:
                     self._result.append(_extract_as_dict(self._fields, row))
         else:
