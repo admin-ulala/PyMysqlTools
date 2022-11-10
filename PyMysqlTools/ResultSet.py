@@ -1,4 +1,4 @@
-import config
+import PyMysqlTools.config as config
 
 
 class ResultSet:

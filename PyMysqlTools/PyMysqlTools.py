@@ -1,6 +1,6 @@
 import pymysql
 
-import config
+import PyMysqlTools.config as config
 from PyMysqlTools.ClauseGenerator import ClauseGenerator
 from PyMysqlTools.SqlActuator import SqlActuator
 from PyMysqlTools.SqlGenerator import SqlGenerator
