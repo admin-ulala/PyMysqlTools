@@ -22,7 +22,12 @@ class ResultSet:
 
         if type_ == list:
             for row in result:
-                self._result.append(list(row))
+                if len(row) > 1:
+                    self._result.append(list(row))
+                elif len(row) == 1:
+                    self._result.append(row[0])
+                else:
+                    self._result.append([None])
         elif type_ == dict:
             if fields_ is None:
                 raise ValueError('[参数错误]', "'type_'为dict时 'fields_' 需要传入参数")
