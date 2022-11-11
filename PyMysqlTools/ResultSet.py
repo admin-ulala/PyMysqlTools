@@ -74,7 +74,7 @@ class ResultSet:
 
     def limit(self, num: int = 1):
         if not isinstance(self._result, list):
-            return None
+            return ValueError('结果集结构类型不为 `list`, 不支持使用limit')
         if num > 0:
             return self._result[: num]
         else:
@@ -82,7 +82,7 @@ class ResultSet:
 
     def next(self):
         if not isinstance(self._result, list):
-            return None
+            return self._result
         if self._index < len(self._result):
             next_ = self._result[self._index]
             self._index += 1
@@ -91,7 +91,7 @@ class ResultSet:
     def get(self, index):
         if isinstance(self._result, list):
             return self._result[index]
-        if len(self._result) == 1:
+        if self._type == dict or len(self._result) == 1:
             return self._result
 
 
