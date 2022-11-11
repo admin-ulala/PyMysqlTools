@@ -73,21 +73,26 @@ class ResultSet:
         return self._result
 
     def limit(self, num: int = 1):
+        if not isinstance(self._result, list):
+            return None
         if num > 0:
             return self._result[: num]
         else:
             raise ValueError("'num' 参数的值必须大于 0 ！")
 
     def next(self):
+        if not isinstance(self._result, list):
+            return None
         if self._index < len(self._result):
             next_ = self._result[self._index]
             self._index += 1
             return next_
-        else:
-            return None
 
     def get(self, index):
-        return self._result[index]
+        if isinstance(self._result, list):
+            return self._result[index]
+        if len(self._result) == 1:
+            return self._result
 
 
 def _extract_as_dict(fields: list, value: list):
