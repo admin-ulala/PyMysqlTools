@@ -39,9 +39,9 @@ class ResultSet:
             raise ValueError('[参数数据类型错误]', "'type_' 只能是 list/dict 类型")
 
         if len(result) == 1 and type_ == list:
-            self._result = list(result[0])
+            self._result = list(self._result[0])
         elif len(result) == 1 and type_ == dict:
-            self._result = result[0]
+            self._result = self._result[0]
 
         self._index = 0
 
