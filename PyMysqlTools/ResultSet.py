@@ -19,8 +19,9 @@ class ResultSet:
             result = []
 
         self._result = []
+        self._type = type_
 
-        if type_ == list:
+        if self._type == list:
             for row in result:
                 if len(row) > 1:
                     self._result.append(list(row))
@@ -28,7 +29,7 @@ class ResultSet:
                     self._result.append(row[0])
                 else:
                     self._result.append([None])
-        elif type_ == dict:
+        elif self._type == dict:
             if fields_ is None:
                 raise ValueError('[参数错误]', "'type_'为dict时 'fields_' 需要传入参数")
             else:
@@ -38,9 +39,9 @@ class ResultSet:
         else:
             raise ValueError('[参数数据类型错误]', "'type_' 只能是 list/dict 类型")
 
-        if len(result) == 1 and type_ == list:
+        if len(result) == 1 and self._type == list:
             self._result = list(self._result[0])
-        elif len(result) == 1 and type_ == dict:
+        elif len(result) == 1 and self._type == dict:
             self._result = self._result[0]
 
         self._index = 0
@@ -65,7 +66,9 @@ class ResultSet:
     def all(self):
         if not self._result:
             return []
-        if not isinstance(self._result[0], list):
+        if self._type == list and not isinstance(self._result[0], list):
+            return [self._result]
+        if isinstance(self._result, dict):
             return [self._result]
         return self._result
 
