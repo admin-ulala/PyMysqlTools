@@ -24,5 +24,5 @@ SOFTWARE.
 from PyMysqlTools.PyMysqlTools import connect
 from PyMysqlTools.PyMysqlTools import connect_pool
 
-__version__ = "0.5.13"
+__version__ = "0.5.14"
 name = "PyMysqlTools"
