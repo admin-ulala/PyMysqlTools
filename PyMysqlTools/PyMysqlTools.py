@@ -152,7 +152,7 @@ class connect:
         """
         return self.update_by(tb_name, data, {'id': id_})
 
-    def find_by(self, tb_name: str, fields: list = None, condition=None, type_=dict) -> ResultSet:
+    def find_by(self, tb_name: str, fields: list = None, condition=None, type_=None) -> ResultSet:
         """
         根据条件查询记录
         :param tb_name: 表名
@@ -161,9 +161,8 @@ class connect:
         :param type_: 返回集结构类型 [dict/list]
         :return: 结果集
         """
-        config_type_ = self.env_config['DEFAULT_RESULT_SET_TYPE']
-        if type_ != config_type_:
-            type_ = config_type_
+        if type_ is None:
+            type_ = self.env_config['DEFAULT_RESULT_SET_TYPE']
 
         sql = self._sql_generator.find_by(tb_name, fields, condition)
         return ResultSet(
@@ -172,17 +171,20 @@ class connect:
             fields_=self.show_table_fields(tb_name).all()
         )
 
-    def find_by_id(self, tb_name: str, id_: int, fields: list = None) -> ResultSet:
+    def find_by_id(self, tb_name: str, id_: int, fields: list = None, type_=None) -> ResultSet:
         """
         根据id查询记录
         :param tb_name: 表名
         :param id_: id
         :param fields: 需要查询的字段
+        :param type_: 返回集结构类型 [dict/list]
         :return: 结果集
         """
-        return self.find_by(tb_name, fields, {'id': id_})
+        if type_ is None:
+            type_ = self.env_config['DEFAULT_RESULT_SET_TYPE']
+        return self.find_by(tb_name, fields, {'id': id_}, type_=type_)
 
-    def find_one(self, tb_name: str, fields: list = None, condition=None, type_=dict) -> ResultSet:
+    def find_one(self, tb_name: str, fields: list = None, condition=None, type_=None) -> ResultSet:
         """
         根据条件查询单条记录
         :param tb_name: 表名
@@ -191,9 +193,8 @@ class connect:
         :param type_: 返回集结构类型 [dict/list]
         :return: 结果集
         """
-        config_type_ = self.env_config['DEFAULT_RESULT_SET_TYPE']
-        if type_ != config_type_:
-            type_ = config_type_
+        if type_ is None:
+            type_ = self.env_config['DEFAULT_RESULT_SET_TYPE']
 
         sql = self._sql_generator.find_by(tb_name, fields, condition)
         sql += self._clause_generator.build_limit_clause(1)
@@ -203,13 +204,16 @@ class connect:
             fields_=self.show_table_fields(tb_name).all()
         )
 
-    def find_all(self, tb_name: str) -> ResultSet:
+    def find_all(self, tb_name: str, type_=None) -> ResultSet:
         """
         查询全表记录
         :param tb_name: 表名
+        :param type_: 返回集结构类型 [dict/list]
         :return: 结果集
         """
-        return self.find_by(tb_name)
+        if type_ is None:
+            type_ = self.env_config['DEFAULT_RESULT_SET_TYPE']
+        return self.find_by(tb_name, type_=type_)
 
     # ====================================================================================================
 
@@ -560,7 +564,7 @@ class connect_pool:
         """
         return self.update_by(tb_name, data, {'id': id_})
 
-    def find_by(self, tb_name: str, fields: list = None, condition=None, type_=dict) -> ResultSet:
+    def find_by(self, tb_name: str, fields: list = None, condition=None, type_=None) -> ResultSet:
         """
         根据条件查询记录
         :param tb_name: 表名
@@ -569,9 +573,8 @@ class connect_pool:
         :param type_: 返回集结构类型 [dict/list]
         :return: 结果集
         """
-        config_type_ = self.env_config['DEFAULT_RESULT_SET_TYPE']
-        if type_ != config_type_:
-            type_ = config_type_
+        if type_ is None:
+            type_ = self.env_config['DEFAULT_RESULT_SET_TYPE']
 
         sql = self._sql_generator.find_by(tb_name, fields, condition)
         result = ResultSet(
@@ -582,17 +585,20 @@ class connect_pool:
         self._connect.close()
         return result
 
-    def find_by_id(self, tb_name: str, id_: int, fields: list = None) -> ResultSet:
+    def find_by_id(self, tb_name: str, id_: int, fields: list = None, type_=None) -> ResultSet:
         """
         根据id查询记录
         :param tb_name: 表名
         :param id_: id
         :param fields: 需要查询的字段
+        :param type_: 返回集结构类型 [dict/list]
         :return: 结果集
         """
-        return self.find_by(tb_name, fields, {'id': id_})
+        if type_ is None:
+            type_ = self.env_config['DEFAULT_RESULT_SET_TYPE']
+        return self.find_by(tb_name, fields, {'id': id_}, type_=type_)
 
-    def find_one(self, tb_name: str, fields: list = None, condition=None, type_=dict) -> ResultSet:
+    def find_one(self, tb_name: str, fields: list = None, condition=None, type_=None) -> ResultSet:
         """
         根据条件查询单条记录
         :param tb_name: 表名
@@ -601,9 +607,8 @@ class connect_pool:
         :param type_: 返回集结构类型 [dict/list]
         :return: 结果集
         """
-        config_type_ = self.env_config['DEFAULT_RESULT_SET_TYPE']
-        if type_ != config_type_:
-            type_ = config_type_
+        if type_ is None:
+            type_ = self.env_config['DEFAULT_RESULT_SET_TYPE']
 
         sql = self._sql_generator.find_by(tb_name, fields, condition)
         sql += self._clause_generator.build_limit_clause(1)
@@ -613,13 +618,16 @@ class connect_pool:
             fields_=self.show_table_fields(tb_name).all()
         )
 
-    def find_all(self, tb_name: str) -> ResultSet:
+    def find_all(self, tb_name: str, type_=None) -> ResultSet:
         """
         查询全表记录
         :param tb_name: 表名
+        :param type_: 返回集结构类型 [dict/list]
         :return: 结果集
         """
-        return self.find_by(tb_name)
+        if type_ is None:
+            type_ = self.env_config['DEFAULT_RESULT_SET_TYPE']
+        return self.find_by(tb_name, type_=type_)
 
     # ====================================================================================================
 
