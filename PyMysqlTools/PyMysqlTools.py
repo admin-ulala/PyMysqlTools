@@ -1,6 +1,6 @@
 import pymysql
 
-import PyMysqlTools.config as config
+import PyMysqlTools.config as config_
 from PyMysqlTools.ClauseGenerator import ClauseGenerator
 from PyMysqlTools.SqlActuator import SqlActuator
 from PyMysqlTools.SqlGenerator import SqlGenerator
@@ -25,7 +25,8 @@ class connect:
             password=None,
             host='localhost',
             port=3306,
-            charset='utf8mb4'
+            charset='utf8mb4',
+            env_config=config_.env_config
     ):
         self.host = host
         self.port = port
@@ -33,6 +34,7 @@ class connect:
         self.password = password
         self.database = database
         self.charset = charset
+        self.env_config = env_config
 
         self._connect = pymysql.connect(
             host=host,
@@ -150,7 +152,7 @@ class connect:
         """
         return self.update_by(tb_name, data, {'id': id_})
 
-    def find_by(self, tb_name: str, fields: list = None, condition=None, type_=config.DEFAULT_RESULT_SET_TYPE) -> ResultSet:
+    def find_by(self, tb_name: str, fields: list = None, condition=None, type_=dict) -> ResultSet:
         """
         根据条件查询记录
         :param tb_name: 表名
@@ -159,6 +161,10 @@ class connect:
         :param type_: 返回集结构类型 [dict/list]
         :return: 结果集
         """
+        config_type_ = self.env_config['DEFAULT_RESULT_SET_TYPE']
+        if type_ != config_type_:
+            type_ = config_type_
+
         sql = self._sql_generator.find_by(tb_name, fields, condition)
         return ResultSet(
             self._sql_actuator.actuator_dql(sql),
@@ -176,7 +182,7 @@ class connect:
         """
         return self.find_by(tb_name, fields, {'id': id_})
 
-    def find_one(self, tb_name: str, fields: list = None, condition=None, type_=config.DEFAULT_RESULT_SET_TYPE) -> ResultSet:
+    def find_one(self, tb_name: str, fields: list = None, condition=None, type_=dict) -> ResultSet:
         """
         根据条件查询单条记录
         :param tb_name: 表名
@@ -185,6 +191,10 @@ class connect:
         :param type_: 返回集结构类型 [dict/list]
         :return: 结果集
         """
+        config_type_ = self.env_config['DEFAULT_RESULT_SET_TYPE']
+        if type_ != config_type_:
+            type_ = config_type_
+
         sql = self._sql_generator.find_by(tb_name, fields, condition)
         sql += self._clause_generator.build_limit_clause(1)
         return ResultSet(
@@ -384,10 +394,11 @@ class connect:
 
 
 class connect_pool:
-    def __init__(self, connect_type: ConnectType, connect_args: dict, **pool_args):
+    def __init__(self, connect_type: ConnectType, connect_args: dict, env_config=config_.env_config, **pool_args):
         self.creator = pymysql
         self.connect_type = connect_type
         self.connect_args = connect_args
+        self.env_config = env_config
         if self.connect_type == ConnectType.persistent_db:
             self._max_usage = pool_args.get('max_usage', None)
             self._set_session = pool_args.get('set_session', None)
@@ -549,7 +560,7 @@ class connect_pool:
         """
         return self.update_by(tb_name, data, {'id': id_})
 
-    def find_by(self, tb_name: str, fields: list = None, condition=None, type_=config.DEFAULT_RESULT_SET_TYPE) -> ResultSet:
+    def find_by(self, tb_name: str, fields: list = None, condition=None, type_=dict) -> ResultSet:
         """
         根据条件查询记录
         :param tb_name: 表名
@@ -558,6 +569,10 @@ class connect_pool:
         :param type_: 返回集结构类型 [dict/list]
         :return: 结果集
         """
+        config_type_ = self.env_config['DEFAULT_RESULT_SET_TYPE']
+        if type_ != config_type_:
+            type_ = config_type_
+
         sql = self._sql_generator.find_by(tb_name, fields, condition)
         result = ResultSet(
             self._sql_actuator.actuator_dql(sql),
@@ -577,14 +592,19 @@ class connect_pool:
         """
         return self.find_by(tb_name, fields, {'id': id_})
 
-    def find_one(self, tb_name: str, fields: list = None, condition=None, type_=config.DEFAULT_RESULT_SET_TYPE) -> ResultSet:
+    def find_one(self, tb_name: str, fields: list = None, condition=None, type_=dict) -> ResultSet:
         """
         根据条件查询单条记录
         :param tb_name: 表名
         :param fields: 需要查询的字段
         :param condition: 查询条件
+        :param type_: 返回集结构类型 [dict/list]
         :return: 结果集
         """
+        config_type_ = self.env_config['DEFAULT_RESULT_SET_TYPE']
+        if type_ != config_type_:
+            type_ = config_type_
+
         sql = self._sql_generator.find_by(tb_name, fields, condition)
         sql += self._clause_generator.build_limit_clause(1)
         return ResultSet(

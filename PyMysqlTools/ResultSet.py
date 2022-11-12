@@ -6,7 +6,7 @@ class ResultSet:
     def __init__(
             self,
             result=None,
-            type_=config.DEFAULT_RESULT_SET_TYPE,
+            type_=config.env_config['DEFAULT_RESULT_SET_TYPE'],
             fields_=None
     ):
         """
@@ -41,8 +41,8 @@ class ResultSet:
 
         if len(result) == 1 and self._type == list:
             self._result = list(self._result[0])
-        elif len(result) == 1 and self._type == dict:
-            self._result = self._result[0]
+        # elif len(result) == 1 and self._type == dict:
+        #     self._result = self._result[0]
 
         self._index = 0
 
@@ -50,6 +50,8 @@ class ResultSet:
         return self
 
     def __next__(self):
+        if not isinstance(self._result, list):
+            return self._result
         if self._index < len(self._result):
             next_ = self._result[self._index]
             self._index += 1
@@ -74,7 +76,7 @@ class ResultSet:
 
     def limit(self, num: int = 1):
         if not isinstance(self._result, list):
-            return ValueError('结果集结构类型不为 `list`, 不支持使用limit')
+            raise ValueError('结果集结构类型不为 `list`, 不支持使用limit')
         if num > 0:
             return self._result[: num]
         else:
@@ -88,7 +90,7 @@ class ResultSet:
             self._index += 1
             return next_
 
-    def get(self, index):
+    def get(self, index: int = 0):
         if isinstance(self._result, list):
             return self._result[index]
         if self._type == dict or len(self._result) == 1:
