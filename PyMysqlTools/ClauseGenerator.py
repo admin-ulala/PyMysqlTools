@@ -74,6 +74,12 @@ class ClauseGenerator:
         self.clause = f"""SHOW {type_.upper().strip()}"""
         return self.clause
 
+    def build_group_clause(self):
+        pass
+
+    def build_order_clause(self):
+        pass
+
     def build_limit_clause(self, index: int, step: int = None):
         self.clause = f""" LIMIT {index}"""
         if step:
