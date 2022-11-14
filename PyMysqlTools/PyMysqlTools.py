@@ -248,7 +248,7 @@ class connect:
         :return: 记录数
         """
         sql = self._sql_generator.show_table_size(tb_name)
-        return ResultSet(self._sql_actuator.actuator_dql(sql), type_=list).get(0)
+        return ResultSet(self._sql_actuator.actuator_dql(sql), type_=list).get()
 
     def show_table_vague_size(self, tb_name: str) -> int:
         """
@@ -257,7 +257,7 @@ class connect:
         :return: 记录数
         """
         sql = self._sql_generator.show_table_vague_size(tb_name)
-        return ResultSet(self._sql_actuator.actuator_dql(sql), type_=list).get(0)
+        return ResultSet(self._sql_actuator.actuator_dql(sql), type_=list).get()
 
     def show_databases(self) -> ResultSet:
         """
@@ -660,7 +660,7 @@ class connect_pool:
         :return: 记录数
         """
         sql = self._sql_generator.show_table_size(tb_name)
-        result = ResultSet(self._sql_actuator.actuator_dql(sql), type_=list).get(0)
+        result = ResultSet(self._sql_actuator.actuator_dql(sql), type_=list).get()
         self._connect.close()
         return result
 
@@ -671,7 +671,7 @@ class connect_pool:
         :return: 记录数
         """
         sql = self._sql_generator.show_table_vague_size(tb_name)
-        result = ResultSet(self._sql_actuator.actuator_dql(sql), type_=list).get(0)
+        result = ResultSet(self._sql_actuator.actuator_dql(sql), type_=list).get()
         self._connect.close()
         return result
 
