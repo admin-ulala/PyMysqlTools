@@ -39,11 +39,6 @@ class ResultSet:
         else:
             raise ValueError('[参数数据类型错误]', "'type_' 只能是 list/dict 类型")
 
-        if len(result) == 1 and self._type == list:
-            self._result = list(self._result[0])
-        # elif len(result) == 1 and self._type == dict:
-        #     self._result = self._result[0]
-
         self._index = 0
 
     def __iter__(self):
