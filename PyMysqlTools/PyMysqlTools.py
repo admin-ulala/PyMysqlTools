@@ -168,7 +168,7 @@ class connect:
         return ResultSet(
             self._sql_actuator.actuator_dql(sql),
             type_=type_,
-            fields_=self.show_table_fields(tb_name).all()
+            fields_=fields or self.show_table_fields(tb_name).all()
         )
 
     def find_by_id(self, tb_name: str, id_: int, fields: list = None, type_=None) -> ResultSet:
@@ -201,7 +201,7 @@ class connect:
         return ResultSet(
             self._sql_actuator.actuator_dql(sql),
             type_=type_,
-            fields_=self.show_table_fields(tb_name).all()
+            fields_=fields or self.show_table_fields(tb_name).all()
         )
 
     def find_all(self, tb_name: str, type_=None) -> ResultSet:
