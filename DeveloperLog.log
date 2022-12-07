@@ -76,4 +76,8 @@ ver 0.5.0
     - [P4]: 修复了 show_table_fields 方法字段名乱序的问题
     - [P-]: 提交最新版本到Pypi, ver 0.5.7
 
+[2022-12-07]
+    - [P3]: 修复issues: https://gitee.com/uraurara/PyMysqlTools/issues/I64ZS1
+    - [P-]: 提交最新版本到Pypi, ver 0.5.18
+
 ===========================================================================
