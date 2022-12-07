@@ -86,6 +86,8 @@ class ResultSet:
             return next_
 
     def get(self, index: int = 0):
+        if not self._result:
+            return None
         if isinstance(self._result, list):
             return self._result[index]
         if self._type == dict or len(self._result) == 1:
