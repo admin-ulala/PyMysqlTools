@@ -13,7 +13,7 @@ class ResultSet:
         ResultSet 结果集
         :param result: 暂时的结果集存储在这里
         :param type_: 返回的结果集类型
-        :param fields_: 如果 type_ 为dict时, 需要字段名
+        :param fields_: 当type_为dict时, 需要字段名
         """
         if result is None:
             result = []
