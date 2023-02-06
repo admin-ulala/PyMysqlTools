@@ -1,5 +1,11 @@
 /build
 /dist
+/venv
+
+.idea
+
 PyMysqlTools.egg-info
 MANIFEST.in
-.idea
+
+setup.py
+
