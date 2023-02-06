@@ -2,13 +2,13 @@
 # PyMysqlTools
 
 
-PyMysqlTools 是一个能以更方便的方式来操作mysql的库
+PyMysqlTools 是一个通过避免编写SQL语句的方式来操作mysql的工具库
 
 
 
 **注意**
 
-PyMysqlTools 目前仅支持 Python3.6+ 且 MySQL5.6+ 版本
+PyMysqlTools 目前支持 Python3.6+ 且 MySQL5.6+ 版本
 
 
 
@@ -33,14 +33,13 @@ PyMysqlTools 目前仅支持 Python3.6+ 且 MySQL5.6+ 版本
    ```python
    import PyMysqlTools
    
+   # 可以使用下面的示例代码直接获得一个mysql数据库的连接
    mysql = PyMysqlTools.connect(
        database='db_test',
        username='root',
        password='123456'
    )
    print(mysql)
-   
-   # 可以使用上面的示例代码获得一个mysql数据库的连接
    ```
 
 2. 简单使用
@@ -96,7 +95,7 @@ PyMysqlTools 目前仅支持 Python3.6+ 且 MySQL5.6+ 版本
 
    - 其他更多方法详见 api 文档
    
-     - ps: api文档目前还没有。
+     - PS: api文档目前还没有。
 
 
 
