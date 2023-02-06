@@ -5,7 +5,4 @@
 .idea
 
 PyMysqlTools.egg-info
-MANIFEST.in
-
-setup.py
 
