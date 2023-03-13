@@ -66,7 +66,7 @@ class ResultSet:
     def all(self):
         if not self._result:
             return []
-        if self._type == list and not isinstance(self._result[0], list):
+        if self._type == list and not isinstance(self._result, list):
             return [self._result]
         if isinstance(self._result, dict):
             return [self._result]
