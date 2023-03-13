@@ -64,6 +64,10 @@ class ResultSet:
         return len(self._result)
 
     def all(self):
+        """
+        将结果集转换为一个方便迭代的结构(List)
+        :return: List结果集
+        """
         if not self._result:
             return []
         if self._type == list and not isinstance(self._result, list):
@@ -73,6 +77,11 @@ class ResultSet:
         return self._result
 
     def limit(self, num: int = 1):
+        """
+        截取结果集的前n个结果, 仅List结构可用
+        :param num: 需要截取的结果的数量
+        :return:
+        """
         if not isinstance(self._result, list):
             raise ValueError('结果集结构类型不为 `list`, 不支持使用limit')
         if num > 0:
@@ -81,6 +90,10 @@ class ResultSet:
             raise ValueError("'num' 参数的值必须大于 0 ！")
 
     def next(self):
+        """
+        获取结果集中的下一个结果, 仅List结构可用
+        :return:
+        """
         if not isinstance(self._result, list):
             return self._result
         if self._index < len(self._result):
@@ -89,6 +102,11 @@ class ResultSet:
             return next_
 
     def get(self, index: int = 0):
+        """
+        获取特定索引位置的结果, 仅List结构可用
+        :param index:
+        :return:
+        """
         if not self._result:
             return None
         if isinstance(self._result, list):
