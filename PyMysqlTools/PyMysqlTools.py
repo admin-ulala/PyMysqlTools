@@ -580,7 +580,7 @@ class connect_pool:
         result = ResultSet(
             self._sql_actuator.actuator_dql(sql),
             type_=type_,
-            fields_=self.show_table_fields(tb_name).all()
+            fields_=fields or self.show_table_fields(tb_name).all()
         )
         self._connect.close()
         return result
@@ -615,7 +615,7 @@ class connect_pool:
         return ResultSet(
             self._sql_actuator.actuator_dql(sql),
             type_=type_,
-            fields_=self.show_table_fields(tb_name).all()
+            fields_=fields or self.show_table_fields(tb_name).all()
         )
 
     def find_all(self, tb_name: str, type_=None) -> ResultSet:
