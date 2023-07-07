@@ -6,6 +6,7 @@
 from .main import Connect as connect
 from .main import ConnectPool as connect_pool
 from .main import ConnectType
+import settings
 
 name = "PyMysqlTools"
 __version__ = "0.6.0"
@@ -13,5 +14,6 @@ __version__ = "0.6.0"
 __all__ = [
     'connect',
     'connect_pool',
-    'ConnectType'
+    'ConnectType',
+    'settings'
 ]
