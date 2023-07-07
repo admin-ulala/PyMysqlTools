@@ -8,7 +8,7 @@ from .main import ConnectPool as connect_pool
 from .main import ConnectType
 
 name = "PyMysqlTools"
-__version__ = "0.5.22"
+__version__ = "0.6.0"
 
 __all__ = [
     'connect',
