@@ -1,4 +1,4 @@
-import PyMysqlTools.config as config
+import settings
 
 
 class ResultSet:
@@ -6,7 +6,7 @@ class ResultSet:
     def __init__(
             self,
             result=None,
-            type_=config.env_config['DEFAULT_RESULT_SET_TYPE'],
+            type_=settings.DEFAULT_RESULT_SET_TYPE,
             fields_=None
     ):
         """

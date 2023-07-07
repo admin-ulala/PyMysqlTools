@@ -1,10 +1,10 @@
 import pymysql
 
-import PyMysqlTools.config as config_
-from PyMysqlTools.ClauseGenerator import ClauseGenerator
-from PyMysqlTools.SqlActuator import SqlActuator
-from PyMysqlTools.SqlGenerator import SqlGenerator
-from PyMysqlTools.ResultSet import ResultSet
+import settings
+from .generator import ClauseGenerator
+from .actuator import SqlActuator
+from .generator import SqlGenerator
+from .result_set import ResultSet
 
 from enum import Enum
 from dbutils.persistent_db import PersistentDB
@@ -16,7 +16,7 @@ class ConnectType(Enum):
     pooled_db = 2
 
 
-class connect:
+class Connect:
 
     def __init__(
             self,
@@ -26,7 +26,6 @@ class connect:
             host='localhost',
             port=3306,
             charset='utf8mb4',
-            env_config=config_.env_config
     ):
         self.host = host
         self.port = port
@@ -34,7 +33,6 @@ class connect:
         self.password = password
         self.database = database
         self.charset = charset
-        self.env_config = env_config
 
         self._connect = pymysql.connect(
             host=host,
@@ -162,7 +160,7 @@ class connect:
         :return: 结果集
         """
         if type_ is None:
-            type_ = self.env_config['DEFAULT_RESULT_SET_TYPE']
+            type_ = settings.DEFAULT_RESULT_SET_TYPE
 
         sql = self._sql_generator.find_by(tb_name, fields, condition)
         return ResultSet(
@@ -181,7 +179,7 @@ class connect:
         :return: 结果集
         """
         if type_ is None:
-            type_ = self.env_config['DEFAULT_RESULT_SET_TYPE']
+            type_ = settings.DEFAULT_RESULT_SET_TYPE
         return self.find_by(tb_name, fields, {'id': id_}, type_=type_)
 
     def find_one(self, tb_name: str, fields: list = None, condition=None, type_=None) -> ResultSet:
@@ -194,7 +192,7 @@ class connect:
         :return: 结果集
         """
         if type_ is None:
-            type_ = self.env_config['DEFAULT_RESULT_SET_TYPE']
+            type_ = settings.DEFAULT_RESULT_SET_TYPE
 
         sql = self._sql_generator.find_by(tb_name, fields, condition)
         sql += self._clause_generator.build_limit_clause(1)
@@ -212,10 +210,8 @@ class connect:
         :return: 结果集
         """
         if type_ is None:
-            type_ = self.env_config['DEFAULT_RESULT_SET_TYPE']
+            type_ = settings.DEFAULT_RESULT_SET_TYPE
         return self.find_by(tb_name, type_=type_)
-
-    # ====================================================================================================
 
     def show_table_fields(self, tb_name: str) -> ResultSet:
         """
@@ -318,8 +314,6 @@ class connect:
         sql = self._sql_generator.delete_table(tb_name)
         return self._sql_actuator.actuator_dml(sql) > 0
 
-    # ====================================================================================================
-
     def create_table(self, tb_name: str, schema) -> int:
         """
         创建数据表
@@ -353,7 +347,6 @@ class connect:
             row_num += 1
         return row_num
 
-    # ====================================================================================================
     def close(self):
         """
         关闭数据库连接
@@ -397,12 +390,11 @@ class connect:
         return self._sql_generator
 
 
-class connect_pool:
-    def __init__(self, connect_type: ConnectType, connect_args: dict, env_config=config_.env_config, **pool_args):
+class ConnectPool:
+    def __init__(self, connect_type: ConnectType, connect_args: dict, **pool_args):
         self.creator = pymysql
         self.connect_type = connect_type
         self.connect_args = connect_args
-        self.env_config = env_config
         if self.connect_type == ConnectType.persistent_db:
             self._max_usage = pool_args.get('max_usage', None)
             self._set_session = pool_args.get('set_session', None)
@@ -574,7 +566,7 @@ class connect_pool:
         :return: 结果集
         """
         if type_ is None:
-            type_ = self.env_config['DEFAULT_RESULT_SET_TYPE']
+            type_ = settings.DEFAULT_RESULT_SET_TYPE
 
         sql = self._sql_generator.find_by(tb_name, fields, condition)
         result = ResultSet(
@@ -595,7 +587,7 @@ class connect_pool:
         :return: 结果集
         """
         if type_ is None:
-            type_ = self.env_config['DEFAULT_RESULT_SET_TYPE']
+            type_ = settings.DEFAULT_RESULT_SET_TYPE
         return self.find_by(tb_name, fields, {'id': id_}, type_=type_)
 
     def find_one(self, tb_name: str, fields: list = None, condition=None, type_=None) -> ResultSet:
@@ -608,7 +600,7 @@ class connect_pool:
         :return: 结果集
         """
         if type_ is None:
-            type_ = self.env_config['DEFAULT_RESULT_SET_TYPE']
+            type_ = settings.DEFAULT_RESULT_SET_TYPE
 
         sql = self._sql_generator.find_by(tb_name, fields, condition)
         sql += self._clause_generator.build_limit_clause(1)
@@ -626,10 +618,8 @@ class connect_pool:
         :return: 结果集
         """
         if type_ is None:
-            type_ = self.env_config['DEFAULT_RESULT_SET_TYPE']
+            type_ = settings.DEFAULT_RESULT_SET_TYPE
         return self.find_by(tb_name, type_=type_)
-
-    # ====================================================================================================
 
     def show_table_fields(self, tb_name: str) -> ResultSet:
         """
@@ -744,8 +734,6 @@ class connect_pool:
         self._connect.close()
         return result
 
-    # ====================================================================================================
-
     def create_table(self, tb_name: str, schema) -> int:
         """
         创建数据表
@@ -785,7 +773,6 @@ class connect_pool:
         self._connect.close()
         return result
 
-    # ====================================================================================================
     def close(self):
         """
         关闭数据库连接
