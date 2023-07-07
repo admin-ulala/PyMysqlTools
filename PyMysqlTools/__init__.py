@@ -6,7 +6,7 @@
 from .main import Connect as connect
 from .main import ConnectPool as connect_pool
 from .main import ConnectType
-import settings
+from . import settings
 
 name = "PyMysqlTools"
 __version__ = "0.6.0"

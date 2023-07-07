@@ -1,6 +1,8 @@
 import pymysql
 
-import settings
+__all__ = ['Connect', 'ConnectPool', 'ConnectType']
+
+from . import settings
 from .generator import ClauseGenerator
 from .actuator import SqlActuator
 from .generator import SqlGenerator

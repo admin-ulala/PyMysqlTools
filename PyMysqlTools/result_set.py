@@ -1,4 +1,4 @@
-import settings
+from . import settings
 
 
 class ResultSet:
