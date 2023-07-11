@@ -81,7 +81,7 @@ class ResultSet:
         """
         截取结果集的前n个结果
         :param num: 需要截取的结果的数量
-        :return:
+        :return: 截取后的结果集
         """
         if not isinstance(self._result, list):
             raise ValueError('结果集结构类型不为 `list`, 不支持使用limit')
@@ -117,6 +117,12 @@ class ResultSet:
 
 
 def _extract_as_dict(fields: list, value: list):
+    """
+    提取字段名和字段值组合后转换为dict结构
+    :param fields: 字段名
+    :param value: 字段值
+    :return: dict结构的单行数据
+    """
     fields_len = len(fields)
     value_len = len(value)
 
