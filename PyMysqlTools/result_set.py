@@ -1,4 +1,5 @@
 from . import settings
+from .exceptions import TypeMismatchError, ParameterError
 
 
 class ResultSet:
@@ -7,13 +8,13 @@ class ResultSet:
             self,
             result=None,
             type_=settings.DEFAULT_RESULT_SET_TYPE,
-            fields_=None
+            fields=None
     ):
         """
         ResultSet 结果集
-        :param result: 暂时的结果集存储在这里
-        :param type_: 返回的结果集类型
-        :param fields_: 当type_为dict时, 需要字段名
+        :param result: 结果集
+        :param type_: 期望返回的结果集结构
+        :param fields: 当type_为dict时, 需要字段名
         """
         if result is None:
             result = []
@@ -30,17 +31,17 @@ class ResultSet:
                 else:
                     self._result.append([None])
         elif self._type == dict:
-            if fields_ is None:
-                raise ValueError('[参数错误]', "'type_'为dict时 'fields_' 需要传入参数")
+            if fields is None:
+                raise ParameterError("'type_'为dict时 'fields' 需要传入参数")
             else:
-                if isinstance(fields_[0], list):
-                    self._fields = fields_[0]
+                if isinstance(fields[0], list):
+                    self._fields = fields[0]
                 else:
-                    self._fields = fields_
+                    self._fields = fields
                 for row in result:
                     self._result.append(_extract_as_dict(self._fields, row))
         else:
-            raise ValueError('[参数数据类型错误]', "'type_' 只能是 list/dict 类型")
+            raise TypeMismatchError("'type_' 只能是 list/dict 类型")
 
         self._index = 0
 
@@ -65,7 +66,7 @@ class ResultSet:
 
     def all(self):
         """
-        将结果集转换为一个方便迭代的结构(List)
+        获取结果集, 并将结果集转换为一个方便迭代的结构(List)
         :return: List结果集
         """
         if not self._result:
@@ -78,7 +79,7 @@ class ResultSet:
 
     def limit(self, num: int = 1):
         """
-        截取结果集的前n个结果, 仅List结构可用
+        截取结果集的前n个结果
         :param num: 需要截取的结果的数量
         :return:
         """
@@ -91,8 +92,8 @@ class ResultSet:
 
     def next(self):
         """
-        获取结果集中的下一个结果, 仅List结构可用
-        :return:
+        获取结果集中的下一个结果
+        :return: 下一行数据
         """
         if not isinstance(self._result, list):
             return self._result
@@ -103,9 +104,9 @@ class ResultSet:
 
     def get(self, index: int = 0):
         """
-        获取特定索引位置的结果, 仅List结构可用
-        :param index:
-        :return:
+        获取特定索引位置的结果
+        :param index: 索引
+        :return: 索引行数据
         """
         if not self._result:
             return None
