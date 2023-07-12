@@ -1,3 +1,6 @@
+from PyMysqlTools.exceptions import TypeMismatchError
+
+
 class SqlGenerator:
 
     def __init__(self):
@@ -125,7 +128,7 @@ class ClauseGenerator:
             self.clause = ',\n'.join(schema)
             return self.clause
 
-        raise ValueError('[数据类型错误]', "'schema' 只能是 list/dict 类型")
+        raise TypeMismatchError("'schema' 只能是 list/dict 类型")
 
     def build_where_clause(self, condition):
         condition_str = ''
@@ -143,7 +146,7 @@ class ClauseGenerator:
         elif isinstance(condition, str):
             condition_str = condition
         else:
-            raise ValueError("[参数类型错误]", "'condition' 参数必须是 dict/list/str 类型")
+            raise TypeMismatchError("'condition' 参数必须是 dict/list/str 类型")
 
         self.clause = f"""WHERE {condition_str}"""
         return self.clause
