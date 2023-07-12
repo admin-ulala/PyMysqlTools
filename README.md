@@ -2,11 +2,11 @@
 # PyMysqlTools
 
 
-PyMysqlTools 是一个通过避免编写SQL语句的方式来操作mysql的工具库
+PyMysqlTools 是一个使用封装好的函数替代SQL语句来操作mysql的工具库
 
 
 
-**注意**
+**环境配置**
 
 PyMysqlTools 目前支持 Python3.6+ 且 MySQL5.6+ 版本
 
@@ -39,7 +39,7 @@ PyMysqlTools 目前支持 Python3.6+ 且 MySQL5.6+ 版本
        username='root',
        password='123456'
    )
-   print(mysql)
+   print(mysql) # <PyMysqlTools.main.Connect object>
    ```
 
 2. 简单使用
@@ -91,15 +91,10 @@ PyMysqlTools 目前支持 Python3.6+ 且 MySQL5.6+ 版本
          print(row)
      ```
 
-     
-
-   - 其他更多方法详见 api 文档
-   
-     - PS: api文档目前还没有。
 
 
 
-### 关于社区
+### 关于
 
 如果您在使用时遇到了意料之外的结果，请[提交Issue](https://gitee.com/uraurara/PyMysqlTools/issues/new?issue%5Bassignee_id%5D=0&issue%5Bmilestone_id%5D=0)帮助我们改进此项目。
 
@@ -107,6 +102,7 @@ PyMysqlTools 目前支持 Python3.6+ 且 MySQL5.6+ 版本
 
 ### Thanks
 
+本项目在开发中使用了以下Python库
 - [PyMySQL](https://gitee.com/src-openeuler/python-PyMySQL)
 - [DBUtils](https://github.com/WebwareForPython/DBUtils)
 
