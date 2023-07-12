@@ -34,11 +34,13 @@ class BaseConnect:
         if self.connect_type is None:
             self._connect = pymysql.connect(**self.connect_args)
         elif self.connect_type == ConnectType.persistent_db:
-            self._pool_args = {**settings.DEFAULT_PERSISTENT_DB_POOL_ARGS.copy(), **pool_args}
+            _pool_args = {**settings.DEFAULT_PERSISTENT_DB_POOL_ARGS.copy(), **pool_args}
+            self._pool_args = {key.replace('_', ''): value for key, value in _pool_args.items()}
             self._pool = PersistentDB(creator=self._creator, **self._pool_args, **self.connect_args)
             self._connect = self._pool.connection()
         elif self.connect_type == ConnectType.pooled_db:
-            self._pool_args = {**settings.DEFAULT_POOLED_DB_POOL_ARGS.copy(), **pool_args}
+            _pool_args = {**settings.DEFAULT_POOLED_DB_POOL_ARGS.copy(), **pool_args}
+            self._pool_args = {key.replace('_', ''): value for key, value in _pool_args.items()}
             self._pool = PooledDB(creator=self._creator, **self._pool_args, **self.connect_args)
             self._connect = self._pool.connection()
         else:
@@ -406,7 +408,7 @@ class Connect(BaseConnect):
     ):
         connect_args = {
             'database': database,
-            'username': username,
+            'user': username,
             'password': password,
             'host': host,
             'port': port,
@@ -417,4 +419,5 @@ class Connect(BaseConnect):
 
 class ConnectPool(BaseConnect):
     def __init__(self, connect_args: dict, connect_type: ConnectType, **pool_args):
+        connect_args = {'user' if key == 'username' else key: value for key, value in connect_args.items()}
         super().__init__(connect_args, connect_type, **pool_args)
