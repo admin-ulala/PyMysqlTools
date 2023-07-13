@@ -12,6 +12,7 @@ class ResultSet:
     ):
         """
         ResultSet 结果集
+
         :param result: 结果集
         :param type_: 期望返回的结果集结构
         :param fields: 当type_为dict时, 需要字段名
@@ -67,6 +68,7 @@ class ResultSet:
     def all(self):
         """
         获取结果集, 并将结果集转换为一个方便迭代的结构(List)
+
         :return: List结果集
         """
         if not self._result:
@@ -80,6 +82,7 @@ class ResultSet:
     def limit(self, num: int = 1):
         """
         截取结果集的前n个结果
+
         :param num: 需要截取的结果的数量
         :return: 截取后的结果集
         """
@@ -93,6 +96,7 @@ class ResultSet:
     def next(self):
         """
         获取结果集中的下一个结果
+
         :return: 下一行数据
         """
         if not isinstance(self._result, list):
@@ -105,6 +109,7 @@ class ResultSet:
     def get(self, index: int = 0):
         """
         获取特定索引位置的结果
+
         :param index: 索引
         :return: 索引行数据
         """
@@ -119,6 +124,7 @@ class ResultSet:
 def _extract_as_dict(fields: list, value: list):
     """
     提取字段名和字段值组合后转换为dict结构
+
     :param fields: 字段名
     :param value: 字段值
     :return: dict结构的单行数据
