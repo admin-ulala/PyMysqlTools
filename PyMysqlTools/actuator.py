@@ -17,7 +17,7 @@ class SqlActuator:
         data = self._cursor.fetchall()
         return data
 
-    def actuator(self, type_: str):
+    def actuator(self, type_: str) -> any:
         func_dict = {
             'DML': self.actuator_dml,
             'DQL': self.actuator_dql
