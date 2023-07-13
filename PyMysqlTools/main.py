@@ -55,6 +55,7 @@ class BaseConnect:
     def insert_one(self, tb_name, data: dict) -> int:
         """
         插入单条记录
+
         :param tb_name: 表名
         :param data: 待插入的数据
         :return: 受影响的行数
@@ -66,6 +67,7 @@ class BaseConnect:
     def batch_insert(self, tb_name: str, data) -> int:
         """
         批量插入记录
+
         :param tb_name: 表名
         :param data: 待插入的数据
         :return: 受影响的行数
@@ -101,6 +103,7 @@ class BaseConnect:
     def update_insert(self, tb_name: str, data: dict):
         """
         插入单条记录, 如果存在则更新, 不存在则插入
+
         :param tb_name: 表名
         :param data: 待插入/更新的数据
         :return: None
@@ -117,6 +120,7 @@ class BaseConnect:
     def delete_by(self, tb_name: str, condition=None) -> int:
         """
         根据条件删除记录
+
         :param tb_name: 表名
         :param condition: 删除条件
         :return: 受影响的行数
@@ -127,6 +131,7 @@ class BaseConnect:
     def delete_by_id(self, tb_name: str, id_: int) -> int:
         """
         根据id删除记录
+
         :param tb_name: 表名
         :param id_: id
         :return: 受影响的行数
@@ -136,6 +141,7 @@ class BaseConnect:
     def update_by(self, tb_name: str, data: dict, condition=None) -> int:
         """
         根据条件更新记录
+
         :param tb_name: 表名
         :param data: 待更新的数据
         :param condition: 更新条件
@@ -148,6 +154,7 @@ class BaseConnect:
     def update_by_id(self, tb_name: str, data: dict, id_: int) -> int:
         """
         根据id更新记录
+
         :param tb_name: 表名
         :param data: 待更新的数据
         :param id_: id
@@ -158,6 +165,7 @@ class BaseConnect:
     def find_by(self, tb_name: str, fields: list = None, condition=None, type_=None) -> ResultSet:
         """
         根据条件查询记录
+
         :param tb_name: 表名
         :param fields: 需要查询的字段
         :param condition: 查询条件
@@ -177,6 +185,7 @@ class BaseConnect:
     def find_by_id(self, tb_name: str, id_: int, fields: list = None, type_=None) -> ResultSet:
         """
         根据id查询记录
+
         :param tb_name: 表名
         :param id_: id
         :param fields: 需要查询的字段
@@ -190,6 +199,7 @@ class BaseConnect:
     def find_one(self, tb_name: str, fields: list = None, condition=None, type_=None) -> ResultSet:
         """
         根据条件查询单条记录
+
         :param tb_name: 表名
         :param fields: 需要查询的字段
         :param condition: 查询条件
@@ -210,6 +220,7 @@ class BaseConnect:
     def find_all(self, tb_name: str, type_=None) -> ResultSet:
         """
         查询全表记录
+
         :param tb_name: 表名
         :param type_: 返回集结构类型 [dict/list]
         :return: 结果集
@@ -221,6 +232,7 @@ class BaseConnect:
     def show_table_fields(self, tb_name: str) -> ResultSet:
         """
         查看表字段
+
         :param tb_name:表名
         :return: 结果集
         """
@@ -233,6 +245,7 @@ class BaseConnect:
     def show_table_desc(self, tb_name: str) -> ResultSet:
         """
         查看表结构
+
         :param tb_name: 表名
         :return: 表结构
         """
@@ -245,6 +258,7 @@ class BaseConnect:
     def show_table_size(self, tb_name: str) -> int:
         """
         查询表有多少条记录
+
         :param tb_name: 表名
         :return: 记录数
         """
@@ -254,6 +268,7 @@ class BaseConnect:
     def show_table_vague_size(self, tb_name: str) -> int:
         """
         估算表有多少条记录, 准确度低, 但速度快
+
         :param tb_name:
         :return: 记录数
         """
@@ -263,6 +278,7 @@ class BaseConnect:
     def show_databases(self) -> ResultSet:
         """
         查看所有数据库
+
         :return: 所有数据库
         """
         sql = self._clause_generator.build_show_clause('DATABASES')
@@ -271,6 +287,7 @@ class BaseConnect:
     def show_tables(self) -> ResultSet:
         """
         查看所有数据表
+
         :return: 所有数据表
         """
         sql = self._clause_generator.build_show_clause('TABLES')
@@ -279,6 +296,7 @@ class BaseConnect:
     def show_table_primary_field(self, tb_name: str) -> ResultSet:
         """
         查询主键字段名称
+
         :param tb_name: 表名
         :return: 结果集
         """
@@ -288,6 +306,7 @@ class BaseConnect:
     def is_exist_database(self, db_name: str) -> bool:
         """
         判断数据库是否存在
+
         :param db_name:
         :return: True: 存在<br>False: 不存在
         """
@@ -296,6 +315,7 @@ class BaseConnect:
     def is_exist_table(self, tb_name: str) -> bool:
         """
         判断数据表是否存在
+
         :param tb_name: 表名
         :return: True: 存在<br>False: 不存在
         """
@@ -304,6 +324,7 @@ class BaseConnect:
     def truncate_table(self, tb_name: str) -> bool:
         """
         清空表数据
+
         :param tb_name: 表名
         :return: 执行结果
         """
@@ -313,6 +334,7 @@ class BaseConnect:
     def delete_table(self, tb_name: str) -> bool:
         """
         删除表所有记录
+
         :param tb_name: 表名
         :return: 执行结果
         """
@@ -322,6 +344,7 @@ class BaseConnect:
     def create_table(self, tb_name: str, schema) -> int:
         """
         创建数据表
+
         :param tb_name: 表名
         :param schema: 表结构
         :return: 0表示创建成功
@@ -332,6 +355,7 @@ class BaseConnect:
     def create_table_not_exists(self, tb_name: str, schema) -> int:
         """
         如果表不存在就创建数据表
+
         :param tb_name: 表名
         :param schema: 表结构
         :return: 0表示创建成功
@@ -342,6 +366,7 @@ class BaseConnect:
     def migration_table(self, for_tb_name: str, to_tb_name: str) -> int:
         """
         将一张表的数据迁移到另一张表中
+
         :param for_tb_name: 数据源表的表名
         :param to_tb_name: 目标表的表名
         :return: 已迁移的数据行数
@@ -355,6 +380,7 @@ class BaseConnect:
     def close(self):
         """
         关闭数据库连接
+
         :return:
         """
         self._connect.close()
@@ -362,6 +388,7 @@ class BaseConnect:
     def reconnect(self):
         """
         重新与MySQL服务建立连接
+
         :return:
         """
         self._connect.ping(reconnect=True)
@@ -369,6 +396,7 @@ class BaseConnect:
     def debugger_connect(self):
         """
         这个方法是方便作者debugger用的, 未来可能会移除
+
         :return:
         """
         return self._connect
@@ -376,6 +404,7 @@ class BaseConnect:
     def debugger_cursor(self):
         """
         这个方法是方便作者debugger用的, 未来可能会移除
+
         :return:
         """
         return self._cursor
@@ -383,6 +412,7 @@ class BaseConnect:
     def debugger_sql_actuator(self):
         """
         这个方法是方便作者debugger用的, 未来可能会移除
+
         :return:
         """
         return self._sql_actuator
@@ -390,6 +420,7 @@ class BaseConnect:
     def debugger_sql_generator(self):
         """
         这个方法是方便作者debugger用的, 未来可能会移除
+
         :return:
         """
         return self._sql_generator
