@@ -21,6 +21,7 @@ class ResultSet:
             result = []
 
         self._result = []
+        self._index = 0
         self._type = type_
 
         if self._type == list:
@@ -33,7 +34,7 @@ class ResultSet:
                     self._result.append([None])
         elif self._type == dict:
             if fields is None:
-                raise ParameterError("'type_'为dict时 'fields' 需要传入参数")
+                raise ParameterError("'type_' 为dict时 'fields' 需要传入参数")
             else:
                 if isinstance(fields[0], list):
                     self._fields = fields[0]
@@ -43,8 +44,6 @@ class ResultSet:
                     self._result.append(_extract_as_dict(self._fields, row))
         else:
             raise TypeMismatchError("'type_' 只能是 list/dict 类型")
-
-        self._index = 0
 
     def __iter__(self):
         return self
