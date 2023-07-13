@@ -8,7 +8,7 @@ from .main import ConnectType
 from . import settings
 
 name = "PyMysqlTools"
-__version__ = "0.6.2"
+__version__ = "0.6.3"
 
 __all__ = [
     'connect',
