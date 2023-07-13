@@ -99,12 +99,7 @@ class ResultSet:
 
         :return: 下一行数据
         """
-        if not isinstance(self._result, list):
-            return self._result
-        if self._index < len(self._result):
-            next_ = self._result[self._index]
-            self._index += 1
-            return next_
+        return self.__next__()
 
     def get(self, index: int = 0):
         """
