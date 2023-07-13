@@ -79,6 +79,18 @@ class ResultSet:
             return [self._result]
         return self._result
 
+    def get(self, index: int = 0):
+        """
+        获取特定索引位置的结果
+
+        :param index: 索引
+        :return: 索引行数据
+        """
+        if self._type == list:
+            return self._result[index]
+        if self._type == dict or len(self._result) == 1:
+            return self._result
+
     def limit(self, num: int = 1):
         """
         截取结果集的前n个结果
@@ -91,7 +103,7 @@ class ResultSet:
         if num > 0:
             return self._result[: num]
         else:
-            raise ValueError("'num' 参数的值必须大于 0 ！")
+            raise ParameterError("'num' 参数的值必须大于 0 ！")
 
     def next(self):
         """
@@ -100,20 +112,6 @@ class ResultSet:
         :return: 下一行数据
         """
         return self.__next__()
-
-    def get(self, index: int = 0):
-        """
-        获取特定索引位置的结果
-
-        :param index: 索引
-        :return: 索引行数据
-        """
-        if not self._result:
-            return None
-        if isinstance(self._result, list):
-            return self._result[index]
-        if self._type == dict or len(self._result) == 1:
-            return self._result
 
 
 def _extract_as_dict(fields: list, value: list):
