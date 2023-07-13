@@ -70,11 +70,9 @@ class ResultSet:
 
         :return: List结果集
         """
-        if not self._result:
-            return []
         if self._type == list and not isinstance(self._result, list):
             return [self._result]
-        if isinstance(self._result, dict):
+        if self._type == dict:
             return [self._result]
         return self._result
 
