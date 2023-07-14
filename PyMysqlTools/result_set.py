@@ -70,10 +70,6 @@ class ResultSet:
 
         :return: List结果集
         """
-        if self._type == list and not isinstance(self._result, list):
-            return [self._result]
-        if self._type == dict:
-            return [self._result]
         return self._result
 
     def get(self, index: int = 0):
@@ -95,8 +91,6 @@ class ResultSet:
         :param num: 需要截取的结果的数量
         :return: 截取后的结果集
         """
-        if not isinstance(self._result, list):
-            raise ValueError('结果集结构类型不为 `list`, 不支持使用limit')
         if num > 0:
             return self._result[: num]
         else:
