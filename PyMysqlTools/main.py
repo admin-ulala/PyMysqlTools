@@ -269,10 +269,22 @@ class BaseConnect:
         """
         估算表有多少条记录, 准确度低, 但速度快
 
-        :param tb_name:
+        :param tb_name: 表名
         :return: 记录数
         """
         sql = self._sql_generator.show_table_vague_size(tb_name)
+        return ResultSet(self._sql_actuator.actuator_dql(sql), type_=list).get()
+
+    def show_auto_increment(self, tb_name: str) -> int:
+        """
+        查看表的自增值
+
+        :note 先analyze_table刷新值, 再获取值
+        :param tb_name: 表名
+        :return: 自增值
+        """
+        self.analyze_table(tb_name)
+        sql = self._sql_generator.show_auto_increment(self.connect_args.get('database'), tb_name)
         return ResultSet(self._sql_actuator.actuator_dql(sql), type_=list).get()
 
     def show_databases(self) -> ResultSet:
@@ -363,6 +375,28 @@ class BaseConnect:
         sql = self._sql_generator.create_table(tb_name, schema)
         return self._sql_actuator.actuator_dml(sql)
 
+    def analyze_table(self, tb_name: str):
+        """
+        更新表元数据
+
+        :param tb_name: 表名
+        :return: 更新结果
+        """
+        sql = self._sql_generator.analyze_table(tb_name)
+        return ResultSet(self._sql_actuator.actuator_dql(sql), type_=list)
+
+    def set_auto_increment(self, tb_name: str, auto_increment: int) -> int:
+        """
+        设置表自增值
+
+        :param tb_name: 表名
+        :param auto_increment: 自增值
+        :return: 执行结果
+        """
+        self.reconnect()
+        sql = self._sql_generator.set_auto_increment(tb_name, auto_increment)
+        return self._sql_actuator.actuator_dml(sql)
+
     def migration_table(self, for_tb_name: str, to_tb_name: str) -> int:
         """
         将一张表的数据迁移到另一张表中
@@ -386,8 +420,23 @@ class BaseConnect:
         self._connect.close()
 
     def reconnect(self):
+        self.close()
+        if self.connect_type is None:
+            self._connect = self._creator.connect(**self.connect_args)
+        elif self.connect_type == ConnectType.persistent_db:
+            self._connect = self._pool.connection()
+        elif self.connect_type == ConnectType.pooled_db:
+            self._connect = self._pool.connection()
+        else:
+            valid_types = [attr for attr in ConnectType.__dict__.keys() if not attr.startswith('_')]
+            raise ParameterError(f"'connect_type' 参数的类型必须是 {', '.join(valid_types)} 中的一种")
+
+        self._cursor = self._connect.cursor()
+        self._sql_actuator = SqlActuator(self._connect)
+
+    def ping(self):
         """
-        重新与MySQL服务建立连接
+        获取与MySQL服务的连接状态
 
         :return:
         """
