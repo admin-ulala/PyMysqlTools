@@ -57,13 +57,21 @@ class SqlGenerator:
         """
         return self.sql.strip()
 
-    def desc_table(self, tb_name: str) -> str:
-        self.sql = f"""DESC `{tb_name}`"""
+    def show_auto_increment(self, db_name: str, tb_name: str) -> str:
+        self.sql = f"""
+        SELECT AUTO_INCREMENT FROM information_schema.TABLES
+        WHERE TABLE_SCHEMA = '{db_name}'
+        AND TABLE_NAME = '{tb_name}';
+        """
         return self.sql.strip()
 
     def show_table_primary_field(self, db_name: str, tb_name: str):
         self.sql = self.show_table_fields(db_name, tb_name)
         self.sql += " AND COLUMN_KEY = 'PRI'"
+        return self.sql.strip()
+
+    def desc_table(self, tb_name: str) -> str:
+        self.sql = f"""DESC `{tb_name}`"""
         return self.sql.strip()
 
     def create_table(self, tb_name: str, schema) -> str:
@@ -78,6 +86,14 @@ class SqlGenerator:
         self.sql = f"""
         CREATE TABLE IF NOT EXISTS `{tb_name}` (\n{schema}\n) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
         """
+        return self.sql.strip()
+
+    def analyze_table(self, tb_name: str):
+        self.sql = f"""ANALYZE TABLE `{tb_name}`"""
+        return self.sql.strip()
+
+    def set_auto_increment(self, tb_name: str, auto_increment: int) -> str:
+        self.sql = f"""ALTER TABLE `{tb_name}` AUTO_INCREMENT = {auto_increment}"""
         return self.sql.strip()
 
     def truncate_table(self, tb_name: str) -> str:
