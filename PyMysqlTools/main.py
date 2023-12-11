@@ -100,7 +100,7 @@ class BaseConnect:
             raise TypeMismatchError("'data' 只能是 dict{str: list}/list[dict]/ResultSet 的类型格式")
         return row_num + 1
 
-    def update_insert(self, tb_name: str, data: dict):
+    def update_insert(self, tb_name: str, data: dict) -> int:
         """
         插入单条记录, 如果存在则更新, 不存在则插入
 
@@ -109,9 +109,9 @@ class BaseConnect:
         :return: None
         """
         try:
-            self.insert_one(tb_name, data)
+            return self.insert_one(tb_name, data)
         except pymysql.err.IntegrityError as err:
-            self.update_by(
+            return self.update_by(
                 tb_name,
                 data,
                 {self.show_table_primary_field(tb_name).all()[0]: err.args[1].split("'")[1]}
@@ -229,53 +229,75 @@ class BaseConnect:
             type_ = settings.DEFAULT_RESULT_SET_TYPE
         return self.find_by(tb_name, type_=type_)
 
-    def show_table_fields(self, tb_name: str) -> ResultSet:
+    def show_table_fields(self, tb_name: str, type_=None) -> ResultSet:
         """
         查看表字段
 
         :param tb_name:表名
         :return: 结果集
         """
+        if type_ is None:
+            type_ = settings.DEFAULT_RESULT_SET_TYPE
+
         sql = self._sql_generator.show_table_fields(self.connect_args['database'], tb_name)
         return ResultSet(
             self._sql_actuator.actuator_dql(sql),
-            type_=list
+            fields=['COLUMN_NAME'],
+            type_=type_
         )
 
-    def show_table_desc(self, tb_name: str) -> ResultSet:
+    def show_table_desc(self, tb_name: str, type_=None) -> ResultSet:
         """
         查看表结构
 
         :param tb_name: 表名
         :return: 表结构
         """
+        if type_ is None:
+            type_ = settings.DEFAULT_RESULT_SET_TYPE
+
         sql = self._sql_generator.desc_table(tb_name)
         return ResultSet(
             self._sql_actuator.actuator_dql(sql),
-            type_=list
+            fields=['Field', 'Type', 'Null', 'Key', 'Default', 'Extra'],
+            type_=type_
         )
 
-    def show_table_size(self, tb_name: str) -> int:
+    def show_table_size(self, tb_name: str, type_=None) -> ResultSet:
         """
         查询表有多少条记录
 
         :param tb_name: 表名
         :return: 记录数
         """
-        sql = self._sql_generator.show_table_size(tb_name)
-        return ResultSet(self._sql_actuator.actuator_dql(sql), type_=list).get()
+        if type_ is None:
+            type_ = settings.DEFAULT_RESULT_SET_TYPE
 
-    def show_table_vague_size(self, tb_name: str) -> int:
+        sql = self._sql_generator.show_table_size(tb_name)
+        return ResultSet(
+            self._sql_actuator.actuator_dql(sql),
+            fields=['TABLE_ROWS'],
+            type_=type_
+        )
+
+    def show_table_vague_size(self, tb_name: str, type_=None) -> ResultSet:
         """
         估算表有多少条记录, 准确度低, 但速度快
 
         :param tb_name: 表名
         :return: 记录数
         """
-        sql = self._sql_generator.show_table_vague_size(tb_name)
-        return ResultSet(self._sql_actuator.actuator_dql(sql), type_=list).get()
+        if type_ is None:
+            type_ = settings.DEFAULT_RESULT_SET_TYPE
 
-    def show_auto_increment(self, tb_name: str) -> int:
+        sql = self._sql_generator.show_table_vague_size(tb_name)
+        return ResultSet(
+            self._sql_actuator.actuator_dql(sql),
+            fields=['TABLE_ROWS'],
+            type_=type_
+        )
+
+    def show_auto_increment(self, tb_name: str, type_=None) -> ResultSet:
         """
         查看表的自增值
 
@@ -283,37 +305,65 @@ class BaseConnect:
         :param tb_name: 表名
         :return: 自增值
         """
+        if type_ is None:
+            type_ = settings.DEFAULT_RESULT_SET_TYPE
+
         self.analyze_table(tb_name)
         sql = self._sql_generator.show_auto_increment(self.connect_args.get('database'), tb_name)
-        return ResultSet(self._sql_actuator.actuator_dql(sql), type_=list).get()
+        return ResultSet(
+            self._sql_actuator.actuator_dql(sql),
+            fields=['TABLE_ROWS'],
+            type_=type_
+        )
 
-    def show_databases(self) -> ResultSet:
+    def show_databases(self, type_=None) -> ResultSet:
         """
         查看所有数据库
 
         :return: 所有数据库
         """
-        sql = self._clause_generator.build_show_clause('DATABASES')
-        return ResultSet(self._sql_actuator.actuator_dql(sql), type_=list)
+        if type_ is None:
+            type_ = settings.DEFAULT_RESULT_SET_TYPE
 
-    def show_tables(self) -> ResultSet:
+        sql = self._clause_generator.build_show_clause('DATABASES')
+        return ResultSet(
+            self._sql_actuator.actuator_dql(sql),
+            fields=['Database'],
+            type_=type_
+        )
+
+    def show_tables(self, type_=None) -> ResultSet:
         """
         查看所有数据表
 
         :return: 所有数据表
         """
-        sql = self._clause_generator.build_show_clause('TABLES')
-        return ResultSet(self._sql_actuator.actuator_dql(sql), type_=list)
+        if type_ is None:
+            type_ = settings.DEFAULT_RESULT_SET_TYPE
 
-    def show_table_primary_field(self, tb_name: str) -> ResultSet:
+        sql = self._clause_generator.build_show_clause('TABLES')
+        return ResultSet(
+            self._sql_actuator.actuator_dql(sql),
+            fields=[f'Tables_in_{self.connect_args.get("database")}'],
+            type_=type_
+        )
+
+    def show_table_primary_field(self, tb_name: str, type_=None) -> ResultSet:
         """
         查询主键字段名称
 
         :param tb_name: 表名
         :return: 结果集
         """
+        if type_ is None:
+            type_ = settings.DEFAULT_RESULT_SET_TYPE
+
         sql = self._sql_generator.show_table_primary_field(self.connect_args['database'], tb_name)
-        return ResultSet(self._sql_actuator.actuator_dql(sql), type_=list)
+        return ResultSet(
+            self._sql_actuator.actuator_dql(sql),
+            fields=['PRIMARY_KEY'],
+            type_=type_
+        )
 
     def is_exist_database(self, db_name: str) -> bool:
         """
@@ -375,15 +425,22 @@ class BaseConnect:
         sql = self._sql_generator.create_table(tb_name, schema)
         return self._sql_actuator.actuator_dml(sql)
 
-    def analyze_table(self, tb_name: str):
+    def analyze_table(self, tb_name: str, type_=None):
         """
         更新表元数据
 
         :param tb_name: 表名
         :return: 更新结果
         """
+        if type_ is None:
+            type_ = settings.DEFAULT_RESULT_SET_TYPE
+
         sql = self._sql_generator.analyze_table(tb_name)
-        return ResultSet(self._sql_actuator.actuator_dql(sql), type_=list)
+        return ResultSet(
+            self._sql_actuator.actuator_dql(sql),
+            fields=['Table', 'Op', 'Msg_type', 'Msg_text'],
+            type_=type_
+        )
 
     def set_auto_increment(self, tb_name: str, auto_increment: int) -> int:
         """

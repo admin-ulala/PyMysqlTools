@@ -46,7 +46,7 @@ class SqlGenerator:
         return self.sql.strip()
 
     def show_table_size(self, tb_name: str) -> str:
-        self.sql = f"""SELECT count(1) AS table_rows FROM `{tb_name}`"""
+        self.sql = f"""SELECT count(1) AS TABLE_ROWS FROM `{tb_name}`"""
         return self.sql.strip()
 
     def show_table_vague_size(self, tb_name: str) -> str:
@@ -66,8 +66,8 @@ class SqlGenerator:
         return self.sql.strip()
 
     def show_table_primary_field(self, db_name: str, tb_name: str):
-        self.sql = self.show_table_fields(db_name, tb_name)
-        self.sql += " AND COLUMN_KEY = 'PRI'"
+        _ = self.show_table_fields(db_name, tb_name).split('ORDER')
+        self.sql = f"{_[0]}AND COLUMN_KEY = 'PRI' ORDER {_[1]}"
         return self.sql.strip()
 
     def desc_table(self, tb_name: str) -> str:
