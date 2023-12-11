@@ -13,9 +13,10 @@ class ResultSet:
         """
         ResultSet 结果集
 
-        :param result: 结果集
-        :param type_: 期望返回的结果集结构
-        :param fields: 当type_为dict时, 需要字段名
+        Args:
+            result: 结果集
+            type_: 结果集类型
+            fields: 字段名, 当type_为dict时, 不可缺省
         """
         if result is None:
             result = []
@@ -68,16 +69,20 @@ class ResultSet:
         """
         获取结果集, 并将结果集转换为一个方便迭代的结构(List)
 
-        :return: List结果集
+        Returns:
+            结果集
         """
         return self._result
 
     def get(self, index: int = 0):
         """
-        获取特定索引位置的结果
+        获取特定索引位置的记录
 
-        :param index: 索引
-        :return: 索引行数据
+        Args:
+            index: 索引
+
+        Returns:
+            结果集
         """
         if self._type == list:
             return self._result[index]
@@ -88,8 +93,11 @@ class ResultSet:
         """
         截取结果集的前n个结果
 
-        :param num: 需要截取的结果的数量
-        :return: 截取后的结果集
+        Args:
+            num: 数量
+
+        Returns:
+            结果集
         """
         if num > 0:
             return self._result[: num]
@@ -100,7 +108,8 @@ class ResultSet:
         """
         获取结果集中的下一个结果
 
-        :return: 下一行数据
+        Returns:
+            记录
         """
         return self.__next__()
 
@@ -109,9 +118,12 @@ def _extract_as_dict(fields: list, value: list):
     """
     提取字段名和字段值组合后转换为dict结构
 
-    :param fields: 字段名
-    :param value: 字段值
-    :return: dict结构的单行数据
+    Args:
+        fields: 字段名
+        value: 字段值
+
+    Returns:
+        dict结构的单行数据
     """
     fields_len = len(fields)
     value_len = len(value)

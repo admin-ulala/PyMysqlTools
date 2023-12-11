@@ -56,9 +56,15 @@ class BaseConnect:
         """
         插入单条记录
 
-        :param tb_name: 表名
-        :param data: 待插入的数据
-        :return: 受影响的行数
+        Examples:
+            insert_one('tb_test', {'id': 1, 'field', 'value'})
+
+        Args:
+            tb_name: 表名
+            data: 待插入的记录
+
+        Returns:
+            受影响的行数
         """
         sql = self._sql_generator.insert_one(tb_name, data)
         args = list(data.values())
@@ -68,9 +74,15 @@ class BaseConnect:
         """
         批量插入记录
 
-        :param tb_name: 表名
-        :param data: 待插入的数据
-        :return: 受影响的行数
+        Examples:
+            batch_insert('tb_test', {'id': [1, ...], 'field', ['value', ...]})
+
+        Args:
+            tb_name: 表名
+            data: 待插入的记录
+
+        Returns:
+            受影响的行数
         """
         row_num = -1
         data_list = []
@@ -104,9 +116,15 @@ class BaseConnect:
         """
         插入单条记录, 如果存在则更新, 不存在则插入
 
-        :param tb_name: 表名
-        :param data: 待插入/更新的数据
-        :return: None
+        Examples:
+            update_insert('tb_test', {'id': 1, 'field', 'value'})
+
+        Args:
+            tb_name: 表名
+            data: 待插入/更新的记录
+
+        Returns:
+            受影响的行数
         """
         try:
             return self.insert_one(tb_name, data)
@@ -121,9 +139,15 @@ class BaseConnect:
         """
         根据条件删除记录
 
-        :param tb_name: 表名
-        :param condition: 删除条件
-        :return: 受影响的行数
+        Examples:
+            delete_by('tb_test', 'field = value')
+
+        Args:
+            tb_name: 表名
+            condition: 删除条件
+
+        Returns:
+            受影响的行数
         """
         sql = self._sql_generator.delete_by(tb_name, condition)
         return self._sql_actuator.actuator_dml(sql)
@@ -132,9 +156,15 @@ class BaseConnect:
         """
         根据id删除记录
 
-        :param tb_name: 表名
-        :param id_: id
-        :return: 受影响的行数
+        Examples:
+            delete_by_id('tb_test', 1)
+
+        Args:
+            tb_name: 表名
+            id_: id
+
+        Returns:
+            受影响的行数
         """
         return self.delete_by(tb_name, {'id': id_})
 
@@ -142,10 +172,16 @@ class BaseConnect:
         """
         根据条件更新记录
 
-        :param tb_name: 表名
-        :param data: 待更新的数据
-        :param condition: 更新条件
-        :return: 受影响的行数
+        Examples:
+            update_by('tb_test', {'id': 1, 'field', 'value'}, 'field = value')
+
+        Args:
+            tb_name: 表名
+            data: 待更新的记录
+            condition: 更新条件
+
+        Returns:
+            受影响的行数
         """
         sql = self._sql_generator.update_by(tb_name, data, condition)
         args = list(data.values())
@@ -155,10 +191,16 @@ class BaseConnect:
         """
         根据id更新记录
 
-        :param tb_name: 表名
-        :param data: 待更新的数据
-        :param id_: id
-        :return: 受影响的行数
+        Examples:
+            update_by('tb_test', {'id': 1, 'field', 'value'}, 1)
+
+        Args:
+            tb_name: 表名
+            data: 待更新的记录
+            id_: id
+
+        Returns:
+            受影响的行数
         """
         return self.update_by(tb_name, data, {'id': id_})
 
@@ -166,11 +208,18 @@ class BaseConnect:
         """
         根据条件查询记录
 
-        :param tb_name: 表名
-        :param fields: 需要查询的字段
-        :param condition: 查询条件
-        :param type_: 返回集结构类型 [dict/list]
-        :return: 结果集
+        Examples:
+            find_by('tb_test') \n
+            find_by('tb_test', ['field', ...], 'field = value', dict)
+
+        Args:
+            tb_name: 表名
+            fields: 待查询的字段
+            condition: 查询条件
+            type_: 结果集类型
+
+        Returns:
+            查询结果
         """
         if type_ is None:
             type_ = settings.DEFAULT_RESULT_SET_TYPE
@@ -178,19 +227,26 @@ class BaseConnect:
         sql = self._sql_generator.find_by(tb_name, fields, condition)
         return ResultSet(
             self._sql_actuator.actuator_dql(sql),
-            type_=type_,
-            fields=fields or self.show_table_fields(tb_name).all()
+            fields=fields or self.show_table_fields(tb_name, list).all(),
+            type_=type_
         )
 
     def find_by_id(self, tb_name: str, id_: int, fields: list = None, type_=None) -> ResultSet:
         """
         根据id查询记录
 
-        :param tb_name: 表名
-        :param id_: id
-        :param fields: 需要查询的字段
-        :param type_: 返回集结构类型 [dict/list]
-        :return: 结果集
+        Examples:
+            find_by_id('tb_test', 1) \n
+            find_by_id('tb_test', 1, ['field', ...], dict)
+
+        Args:
+            tb_name: 表名
+            id_: id
+            fields: 待查询的字段
+            type_: 结果集类型
+
+        Returns:
+            查询结果
         """
         if type_ is None:
             type_ = settings.DEFAULT_RESULT_SET_TYPE
@@ -200,11 +256,18 @@ class BaseConnect:
         """
         根据条件查询单条记录
 
-        :param tb_name: 表名
-        :param fields: 需要查询的字段
-        :param condition: 查询条件
-        :param type_: 返回集结构类型 [dict/list]
-        :return: 结果集
+        Examples:
+            find_one('tb_test') \n
+            find_one('tb_test', ['field', ...], 'field = value', dict)
+
+        Args:
+            tb_name: 表名
+            fields: 待查询的字段
+            condition: 查询条件
+            type_: 结果集类型
+
+        Returns:
+            查询结果
         """
         if type_ is None:
             type_ = settings.DEFAULT_RESULT_SET_TYPE
@@ -221,9 +284,15 @@ class BaseConnect:
         """
         查询全表记录
 
-        :param tb_name: 表名
-        :param type_: 返回集结构类型 [dict/list]
-        :return: 结果集
+        Examples:
+            find_all('tb_test')
+
+        Args:
+            tb_name: 表名
+            type_: 结果集类型
+
+        Returns:
+            查询结果
         """
         if type_ is None:
             type_ = settings.DEFAULT_RESULT_SET_TYPE
@@ -233,8 +302,15 @@ class BaseConnect:
         """
         查看表字段
 
-        :param tb_name:表名
-        :return: 结果集
+        Examples:
+            show_table_fields('tb_test')
+
+        Args:
+            tb_name: 表名
+            type_: 结果集类型
+
+        Returns:
+            查询结果
         """
         if type_ is None:
             type_ = settings.DEFAULT_RESULT_SET_TYPE
@@ -250,8 +326,15 @@ class BaseConnect:
         """
         查看表结构
 
-        :param tb_name: 表名
-        :return: 表结构
+        Examples:
+            show_table_desc('tb_test')
+
+        Args:
+            tb_name: 表名
+            type_: 结果集类型
+
+        Returns:
+            查询结果
         """
         if type_ is None:
             type_ = settings.DEFAULT_RESULT_SET_TYPE
@@ -265,10 +348,17 @@ class BaseConnect:
 
     def show_table_size(self, tb_name: str, type_=None) -> ResultSet:
         """
-        查询表有多少条记录
+        查询表记录条数
 
-        :param tb_name: 表名
-        :return: 记录数
+        Examples:
+            show_table_size('tb_test')
+
+        Args:
+            tb_name: 表名
+            type_: 结果集类型
+
+        Returns:
+            查询结果
         """
         if type_ is None:
             type_ = settings.DEFAULT_RESULT_SET_TYPE
@@ -282,10 +372,17 @@ class BaseConnect:
 
     def show_table_vague_size(self, tb_name: str, type_=None) -> ResultSet:
         """
-        估算表有多少条记录, 准确度低, 但速度快
+        估算表记录条数, 准确度低, 速度快
 
-        :param tb_name: 表名
-        :return: 记录数
+        Examples:
+            show_table_vague_size('tb_test')
+
+        Args:
+            tb_name: 表名
+            type_: 结果集类型
+
+        Returns:
+            查询结果
         """
         if type_ is None:
             type_ = settings.DEFAULT_RESULT_SET_TYPE
@@ -301,9 +398,15 @@ class BaseConnect:
         """
         查看表的自增值
 
-        :note 先analyze_table刷新值, 再获取值
-        :param tb_name: 表名
-        :return: 自增值
+        Examples:
+            show_auto_increment('tb_test')
+
+        Args:
+            tb_name: 表名
+            type_: 结果集类型
+
+        Returns:
+            查询结果
         """
         if type_ is None:
             type_ = settings.DEFAULT_RESULT_SET_TYPE
@@ -312,7 +415,7 @@ class BaseConnect:
         sql = self._sql_generator.show_auto_increment(self.connect_args.get('database'), tb_name)
         return ResultSet(
             self._sql_actuator.actuator_dql(sql),
-            fields=['TABLE_ROWS'],
+            fields=['AUTO_INCREMENT'],
             type_=type_
         )
 
@@ -320,7 +423,14 @@ class BaseConnect:
         """
         查看所有数据库
 
-        :return: 所有数据库
+        Examples:
+            show_databases()
+
+        Args:
+            type_: 结果集类型
+
+        Returns:
+            查询结果
         """
         if type_ is None:
             type_ = settings.DEFAULT_RESULT_SET_TYPE
@@ -336,7 +446,14 @@ class BaseConnect:
         """
         查看所有数据表
 
-        :return: 所有数据表
+        Examples:
+            show_tables()
+
+        Args:
+            type_: 结果集类型
+
+        Returns:
+            查询结果
         """
         if type_ is None:
             type_ = settings.DEFAULT_RESULT_SET_TYPE
@@ -350,10 +467,17 @@ class BaseConnect:
 
     def show_table_primary_field(self, tb_name: str, type_=None) -> ResultSet:
         """
-        查询主键字段名称
+        查询主键字段
 
-        :param tb_name: 表名
-        :return: 结果集
+        Examples:
+            show_table_primary_field('tb_test')
+
+        Args:
+            tb_name: 表名
+            type_: 结果集类型
+
+        Returns:
+            查询结果
         """
         if type_ is None:
             type_ = settings.DEFAULT_RESULT_SET_TYPE
@@ -369,8 +493,14 @@ class BaseConnect:
         """
         判断数据库是否存在
 
-        :param db_name:
-        :return: True: 存在<br>False: 不存在
+        Examples:
+            is_exist_database('db_test')
+
+        Args:
+            db_name: 库名
+
+        Returns:
+            是否存在
         """
         return db_name in self.show_databases()
 
@@ -378,8 +508,14 @@ class BaseConnect:
         """
         判断数据表是否存在
 
-        :param tb_name: 表名
-        :return: True: 存在<br>False: 不存在
+        Examples:
+            is_exist_table('tb_test')
+
+        Args:
+            tb_name: 表名
+
+        Returns:
+            是否存在
         """
         return tb_name in self.show_tables()
 
@@ -387,8 +523,14 @@ class BaseConnect:
         """
         清空表数据
 
-        :param tb_name: 表名
-        :return: 执行结果
+        Examples:
+            truncate_table('tb_test')
+
+        Args:
+            tb_name: 表名
+
+        Returns:
+            是否执行成功
         """
         sql = self._sql_generator.truncate_table(tb_name)
         return self._sql_actuator.actuator_dml(sql) > 0
@@ -397,8 +539,14 @@ class BaseConnect:
         """
         删除表所有记录
 
-        :param tb_name: 表名
-        :return: 执行结果
+        Examples:
+            delete_table('tb_test')
+
+        Args:
+            tb_name: 表名
+
+        Returns:
+            执行结果
         """
         sql = self._sql_generator.delete_table(tb_name)
         return self._sql_actuator.actuator_dml(sql) > 0
@@ -407,9 +555,16 @@ class BaseConnect:
         """
         创建数据表
 
-        :param tb_name: 表名
-        :param schema: 表结构
-        :return: 0表示创建成功
+        Examples:
+            create_table('tb_test', ['id', 'field', ...])
+            create_table('tb_test', {'id', 'int PRIMARY KEY AUTO_INCREMENT', 'field', 'varchar(255)', ...})
+
+        Args:
+            tb_name: 表名
+            schema: 表结构
+
+        Returns:
+            执行结果, 0表示创建成功
         """
         sql = self._sql_generator.create_table(tb_name, schema)
         return self._sql_actuator.actuator_dml(sql)
@@ -418,19 +573,33 @@ class BaseConnect:
         """
         如果表不存在就创建数据表
 
-        :param tb_name: 表名
-        :param schema: 表结构
-        :return: 0表示创建成功
+        Examples:
+            create_table_not_exists('tb_test', ['id', 'field', ...])
+            create_table_not_exists('tb_test', {'id', 'int PRIMARY KEY AUTO_INCREMENT', 'field', 'varchar(255)', ...})
+
+        Args:
+            tb_name: 表名
+            schema: 表结构
+
+        Returns:
+            执行结果, 0表示创建成功
         """
         sql = self._sql_generator.create_table(tb_name, schema)
         return self._sql_actuator.actuator_dml(sql)
 
     def analyze_table(self, tb_name: str, type_=None):
         """
-        更新表元数据
+        分析表并统计表信息
 
-        :param tb_name: 表名
-        :return: 更新结果
+        Examples:
+            analyze_table('tb_test')
+
+        Args:
+            tb_name: 表名
+            type_: 结果集类型
+
+        Returns:
+            执行结果
         """
         if type_ is None:
             type_ = settings.DEFAULT_RESULT_SET_TYPE
@@ -446,9 +615,15 @@ class BaseConnect:
         """
         设置表自增值
 
-        :param tb_name: 表名
-        :param auto_increment: 自增值
-        :return: 执行结果
+        Examples:
+            set_auto_increment('tb_test', 10)
+
+        Args:
+            tb_name: 表名
+            auto_increment: 自增值
+
+        Returns:
+            执行结果
         """
         self.reconnect()
         sql = self._sql_generator.set_auto_increment(tb_name, auto_increment)
@@ -458,9 +633,15 @@ class BaseConnect:
         """
         将一张表的数据迁移到另一张表中
 
-        :param for_tb_name: 数据源表的表名
-        :param to_tb_name: 目标表的表名
-        :return: 已迁移的数据行数
+        Examples:
+            migration_table('tb_test', 'tb_test_bak')
+
+        Args:
+            for_tb_name: 数据源表的表名
+            to_tb_name: 目标表的表名
+
+        Returns:
+            已迁移的数据行数
         """
         row_num = 0
         for row in self.find_all(for_tb_name):
@@ -470,13 +651,20 @@ class BaseConnect:
 
     def close(self):
         """
-        关闭数据库连接
+        关闭当前数据库连接
 
-        :return:
+        Returns:
+            None
         """
         self._connect.close()
 
     def reconnect(self):
+        """
+        重新建立当前数据库连接
+
+        Returns:
+            None
+        """
         self.close()
         if self.connect_type is None:
             self._connect = self._creator.connect(**self.connect_args)
@@ -495,7 +683,8 @@ class BaseConnect:
         """
         获取与MySQL服务的连接状态
 
-        :return:
+        Returns:
+            None
         """
         self._connect.ping(reconnect=True)
 
