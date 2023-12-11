@@ -744,6 +744,6 @@ class Connect(BaseConnect):
 
 
 class ConnectPool(BaseConnect):
-    def __init__(self, connect_args: dict, connect_type: ConnectType, **pool_args):
+    def __init__(self, connect_type: ConnectType, connect_args: dict, **pool_args):
         connect_args = {'user' if key == 'username' else key: value for key, value in connect_args.items()}
         super().__init__(connect_args, connect_type, **pool_args)
