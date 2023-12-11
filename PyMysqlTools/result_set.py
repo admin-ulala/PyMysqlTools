@@ -74,6 +74,21 @@ class ResultSet:
         """
         return self._result
 
+    def get_key(self, key: str = None):
+        """
+        获取特定字段的值, 只能对单记录结果集使用
+
+        Args:
+            key: 字段
+
+        Returns:
+            记录
+        """
+        if self._type == dict and len(self._result) == 1:
+            if len(self._result[0].values()) == 1:
+                return list(self._result[0].values())[0]
+            return self._result[0].get(key)
+
     def get(self, index: int = 0):
         """
         获取特定索引位置的记录
@@ -86,7 +101,9 @@ class ResultSet:
         """
         if self._type == list:
             return self._result[index]
-        if self._type == dict or len(self._result) == 1:
+        if self._type == dict:
+            if len(self._result) == 1:
+                return self._result[0]
             return self._result
 
     def limit(self, num: int = 1):
