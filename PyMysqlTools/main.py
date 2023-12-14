@@ -227,7 +227,7 @@ class BaseConnect:
         sql = self._sql_generator.find_by(tb_name, fields, condition)
         return ResultSet(
             self._sql_actuator.actuator_dql(sql),
-            fields=fields or self.show_table_fields(tb_name, list).all(),
+            fields=fields or self.show_table_fields(tb_name, type_=list).all(),
             type_=type_
         )
 
@@ -277,7 +277,7 @@ class BaseConnect:
         return ResultSet(
             self._sql_actuator.actuator_dql(sql),
             type_=type_,
-            fields=fields or self.show_table_fields(tb_name).all()
+            fields=fields or self.show_table_fields(tb_name, type_=list).all()
         )
 
     def find_all(self, tb_name: str, type_=None) -> ResultSet:

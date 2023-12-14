@@ -37,10 +37,17 @@ class ResultSet:
             if fields is None:
                 raise ParameterError("'type_' 为dict时 'fields' 需要传入参数")
             else:
-                if isinstance(fields[0], list):
-                    self._fields = fields[0]
-                else:
+                if isinstance(fields, list):
                     self._fields = fields
+                elif isinstance(fields[0], list):
+                    self._fields = fields[0]
+                elif isinstance(fields[0], dict):
+                    _ = []
+                    for field in fields:
+                        _.append(field.get('COLUMN_NAME'))
+                    self._fields = _
+                else:
+                    raise ParameterError("'fields' 参数类型错误, 应为list[str]/list[dict]类型")
                 for row in result:
                     self._result.append(_extract_as_dict(self._fields, row))
         else:
@@ -104,7 +111,7 @@ class ResultSet:
         if self._type == dict:
             if len(self._result) == 1:
                 return self._result[0]
-            return self._result
+            return self._result[index]
 
     def limit(self, num: int = 1):
         """
