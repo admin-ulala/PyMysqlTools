@@ -688,38 +688,6 @@ class BaseConnect:
         """
         self._connect.ping(reconnect=True)
 
-    def debugger_connect(self):
-        """
-        这个方法是方便作者debugger用的, 未来可能会移除
-
-        :return:
-        """
-        return self._connect
-
-    def debugger_cursor(self):
-        """
-        这个方法是方便作者debugger用的, 未来可能会移除
-
-        :return:
-        """
-        return self._cursor
-
-    def debugger_sql_actuator(self):
-        """
-        这个方法是方便作者debugger用的, 未来可能会移除
-
-        :return:
-        """
-        return self._sql_actuator
-
-    def debugger_sql_generator(self):
-        """
-        这个方法是方便作者debugger用的, 未来可能会移除
-
-        :return:
-        """
-        return self._sql_generator
-
 
 class Connect(BaseConnect):
 
